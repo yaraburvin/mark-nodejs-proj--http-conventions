@@ -27,15 +27,21 @@ type SignatureCollection = Signature[];
  */
 let _signatureCollection: SignatureCollection = [];
 
-export function getAllSignatures() {
+function protectFromMutations(
+  signatures: SignatureCollection
+): SignatureCollection {
   /**
    * Uses a spread inside of a map to prevent
    *  accidental mutation: shallow copy of each
    *  signature and then a new array containing them all
    */
-  return _signatureCollection.map((signature) => ({
+  return signatures.map((signature) => ({
     ...signature,
   }));
+}
+
+export function getAllSignatures() {
+  return protectFromMutations(_signatureCollection);
 }
 
 export function getSignatureByDate() {}
@@ -43,5 +49,5 @@ export function getSignatureByDate() {}
 export function getSignatureByDateOrFail() {}
 
 export function setAllSignatures(signatures: SignatureCollection) {
-  _signatureCollection = signatures;
+  _signatureCollection = protectFromMutations(signatures);
 }
