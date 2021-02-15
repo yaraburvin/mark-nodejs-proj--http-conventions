@@ -44,7 +44,16 @@ export function getAllSignatures() {
   return protectFromMutations(_signatureCollection);
 }
 
-export function getSignatureByDate() {}
+/**
+ * Finds the first signature with the matching date
+ * @param date the Date.now() number id for the date
+ */
+export function getSignatureByDate(date: number) {
+  const matchingSignature = _signatureCollection.find(
+    (signature) => signature.date === date
+  );
+  return matchingSignature ? { ...matchingSignature } : null;
+}
 
 export function getSignatureByDateOrFail() {}
 

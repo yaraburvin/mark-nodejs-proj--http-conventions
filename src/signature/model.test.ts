@@ -1,4 +1,8 @@
-import { getAllSignatures, setAllSignatures } from "./model";
+import {
+  getAllSignatures,
+  getSignatureByDate,
+  setAllSignatures,
+} from "./model";
 
 describe("getAllSignatures", () => {
   it("returns all signatures stored", () => {
@@ -41,7 +45,30 @@ describe("getAllSignatures", () => {
 });
 
 describe("getSignatureByDate", () => {
-  it("returns a given signature if it can find it", () => {});
+  it("returns a given signature if it can find it", () => {
+    // setup
+    const [dateOne, dateTwo, dateThree] = [
+      // use addition to ensure different milliseconds
+      Date.now(),
+      Date.now() + 1,
+      Date.now() + 2,
+    ];
+    setAllSignatures([
+      { date: dateOne, name: "Apple" },
+      { date: dateTwo, name: "Banana" },
+      { date: dateThree, name: "Carrot" },
+    ]);
+
+    // act
+    const sigOne = getSignatureByDate(dateOne);
+    const sigTwo = getSignatureByDate(dateTwo);
+    const sigThree = getSignatureByDate(dateThree);
+
+    // assert
+    expect(sigOne).toHaveProperty("name", "Apple");
+    expect(sigTwo).toHaveProperty("name", "Banana");
+    expect(sigThree).toHaveProperty("name", "Carrot");
+  });
 });
 
 describe("setAllSignatures", () => {
