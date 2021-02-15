@@ -1,4 +1,5 @@
 import { protectFromMutations } from "./util";
+import { findSignatureByDate } from "./model";
 
 export interface Signature {
   /**
@@ -30,22 +31,36 @@ export type SignatureCollection = Signature[];
 let _signatureCollection: SignatureCollection = [];
 
 /**
- * Finds the first signature with the matching date
+ * Finds the first signature with the matching date.
+ * Returns null if there is no matching signature
  * @param date the Date.now() number id for the date
  */
-export function findSignatureByDate(date: number) {
+export function findSignatureByDate(date: number): Signature | null {
   const matchingSignature = _signatureCollection.find(
     (signature) => signature.date === date
   );
   return matchingSignature ? { ...matchingSignature } : null;
 }
 
-export function findSignatureByDateOrFail() {}
+/**
+ * Finds the first signature with the matching date.
+ * Throws an error if there is no matching signature.
+ *
+ * @param date the Date.now() number id for the date
+ */
+export function findSignatureByDateOrFail(date: number): Signature {
+  const signature = findSignatureByDate(date);
+  if (signature) {
+    return signature;
+  } else {
+    throw new Error(`No signature exists with the date ${date}`);
+  }
+}
 
-export function getAllSignatures() {
+export function getAllSignatures(): SignatureCollection {
   return protectFromMutations(_signatureCollection);
 }
 
-export function setAllSignatures(signatures: SignatureCollection) {
+export function setAllSignatures(signatures: SignatureCollection): void {
   _signatureCollection = protectFromMutations(signatures);
 }

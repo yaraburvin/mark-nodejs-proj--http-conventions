@@ -81,6 +81,19 @@ describe("findSignatureByDate", () => {
     // assert
     expect(result).toBeNull();
   });
+
+  it("is resistant to accidental mutation", () => {
+    // setup
+    const presentDate = Date.now();
+    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+
+    // act
+    const signature = findSignatureByDate(presentDate);
+    signature!.name = "WAKKA WAKKA";
+
+    // assert: still finds a name of Apple
+    expect(findSignatureByDate(presentDate)).toHaveProperty("name", "Apple");
+  });
 });
 
 describe("setAllSignatures", () => {
