@@ -33,6 +33,20 @@ export type SignatureCollection = Signature[];
 let _signatureCollection: SignatureCollection = [];
 
 /**
+ * Finds the first signature with the matching data.
+ * Returns null if there is no matching signature
+ * @param date the Date.now() number id for the date
+ */
+export function findSignature(
+  signatureMatcher: Partial<Signature>
+): Signature | null {
+  const matchingSignature = _signatureCollection.find(
+    (signature) => signature.date === date
+  );
+  return matchingSignature ? { ...matchingSignature } : null;
+}
+
+/**
  * Finds the first signature with the matching date.
  * Returns null if there is no matching signature
  * @param date the Date.now() number id for the date
