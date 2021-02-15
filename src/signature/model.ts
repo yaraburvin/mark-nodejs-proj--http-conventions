@@ -1,5 +1,4 @@
 import { protectFromMutations } from "./util";
-import { findSignatureByDate } from "./model";
 
 export interface Signature {
   /**
