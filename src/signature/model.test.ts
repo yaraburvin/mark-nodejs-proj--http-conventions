@@ -1,6 +1,6 @@
 import {
   getAllSignatures,
-  getSignatureByDate,
+  findSignatureByDate,
   setAllSignatures,
 } from "./model";
 
@@ -44,7 +44,7 @@ describe("getAllSignatures", () => {
   });
 });
 
-describe("getSignatureByDate", () => {
+describe("findSignatureByDate", () => {
   it("returns a given signature if it can find it", () => {
     // setup
     const [dateOne, dateTwo, dateThree] = [
@@ -60,9 +60,9 @@ describe("getSignatureByDate", () => {
     ]);
 
     // act
-    const sigOne = getSignatureByDate(dateOne);
-    const sigTwo = getSignatureByDate(dateTwo);
-    const sigThree = getSignatureByDate(dateThree);
+    const sigOne = findSignatureByDate(dateOne);
+    const sigTwo = findSignatureByDate(dateTwo);
+    const sigThree = findSignatureByDate(dateThree);
 
     // assert
     expect(sigOne).toHaveProperty("name", "Apple");
