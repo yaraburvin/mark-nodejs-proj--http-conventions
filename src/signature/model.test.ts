@@ -2,6 +2,7 @@ import {
   getAllSignatures,
   findSignatureByDate,
   setAllSignatures,
+  findSignatureByDateOrFail,
 } from "./model";
 
 describe("getAllSignatures", () => {
@@ -80,6 +81,57 @@ describe("findSignatureByDate", () => {
 
     // assert
     expect(result).toBeNull();
+  });
+
+  it("is resistant to accidental mutation", () => {
+    // setup
+    const presentDate = Date.now();
+    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+
+    // act
+    const signature = findSignatureByDate(presentDate);
+    signature!.name = "WAKKA WAKKA";
+
+    // assert: still finds a name of Apple
+    expect(findSignatureByDate(presentDate)).toHaveProperty("name", "Apple");
+  });
+});
+
+describe("findSignatureByDateOrFail", () => {
+  it("returns a given signature if it can find it", () => {
+    // setup
+    const [dateOne, dateTwo, dateThree] = [
+      // use addition to ensure different milliseconds
+      Date.now(),
+      Date.now() + 1,
+      Date.now() + 2,
+    ];
+    setAllSignatures([
+      { date: dateOne, name: "Apple" },
+      { date: dateTwo, name: "Banana" },
+      { date: dateThree, name: "Carrot" },
+    ]);
+
+    // act
+    const sigOne = findSignatureByDateOrFail(dateOne);
+    const sigTwo = findSignatureByDateOrFail(dateTwo);
+    const sigThree = findSignatureByDateOrFail(dateThree);
+
+    // assert
+    expect(sigOne).toHaveProperty("name", "Apple");
+    expect(sigTwo).toHaveProperty("name", "Banana");
+    expect(sigThree).toHaveProperty("name", "Carrot");
+  });
+
+  it("throws an error no signature exists with that date", () => {
+    // setup
+    const presentDate = Date.now();
+    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+
+    // assert
+    expect(() => {
+      findSignatureByDateOrFail(presentDate - 1000);
+    }).toThrowError();
   });
 
   it("is resistant to accidental mutation", () => {
