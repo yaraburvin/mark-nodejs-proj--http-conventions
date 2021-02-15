@@ -40,9 +40,18 @@ let _signatureCollection: SignatureCollection = [];
 export function findSignature(
   signatureMatcher: Partial<Signature>
 ): Signature | null {
-  const matchingSignature = _signatureCollection.find(
-    (signature) => signature.date === date
-  );
+  // type assertion since Object.entries loses type of keys and values
+  const matcherEntries = Object.entries(signatureMatcher) as [
+    keyof Signature,
+    Signature[keyof Signature]
+  ][];
+  const matchingSignature = _signatureCollection.find((signature) => {
+    // return true only if all keys and matching values are present
+    for (let [key, value] of matcherEntries) {
+      if (signature[key] !== value) return false;
+    }
+    return true;
+  });
   return matchingSignature ? { ...matchingSignature } : null;
 }
 
