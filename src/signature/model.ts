@@ -11,6 +11,9 @@ export interface Signature {
   message?: string;
 }
 
+/** A signature, omitting the 'date' property */
+export type DatelessSignature = Omit<Signature, "date">;
+
 /**
  * A data structure to store signatures.
  */
@@ -58,6 +61,20 @@ export function findSignatureByDateOrFail(date: number): Signature {
 
 export function getAllSignatures(): SignatureCollection {
   return protectFromMutations(_signatureCollection);
+}
+
+/**
+ * Inserts data from a (dateless) signature into the collection.
+ * Returns the signature inserted, with an auto-given date
+ * @param signature the (dateless) signature to insert
+ */
+export function insertSignature(signature: DatelessSignature): Signature {
+  const signatureToAdd = {
+    ...signature,
+    date: Date.now(), // create date as adding it in
+  };
+  _signatureCollection.push(signatureToAdd);
+  return signatureToAdd;
 }
 
 export function setAllSignatures(signatures: SignatureCollection): void {

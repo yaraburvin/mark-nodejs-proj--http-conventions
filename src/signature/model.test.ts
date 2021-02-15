@@ -3,6 +3,7 @@ import {
   findSignatureByDate,
   setAllSignatures,
   findSignatureByDateOrFail,
+  insertSignature,
 } from "./model";
 
 describe("getAllSignatures", () => {
@@ -145,6 +146,30 @@ describe("findSignatureByDateOrFail", () => {
 
     // assert: still finds a name of Apple
     expect(findSignatureByDate(presentDate)).toHaveProperty("name", "Apple");
+  });
+});
+
+describe("insertSignature", () => {
+  it("adds a signature into the collection and returns it with a date property", () => {
+    // setup
+    setAllSignatures([
+      // use date in past to ensure uniqueness
+      { date: Date.now() - 1, name: "Horrid Henry" },
+    ]);
+
+    // act
+    const signatureToInsert = { name: "Perfect Peter" };
+    const insertedSignature = insertSignature({ name: "Perfect Peter" });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toHaveLength(2);
+    expect(signatures[1]).toMatchObject(signatureToInsert);
+    expect(signatures[1]).toMatchObject(insertedSignature);
+    // has added a date number
+    expect(typeof insertedSignature.date).toBe("number");
+    // has not added it onto the original object
+    expect(signatureToInsert).not.toHaveProperty("date");
   });
 });
 
