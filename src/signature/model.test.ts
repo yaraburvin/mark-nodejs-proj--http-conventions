@@ -69,6 +69,18 @@ describe("findSignatureByDate", () => {
     expect(sigTwo).toHaveProperty("name", "Banana");
     expect(sigThree).toHaveProperty("name", "Carrot");
   });
+
+  it("returns null if no signature exists with that date", () => {
+    // setup
+    const presentDate = Date.now();
+    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+
+    // act
+    const result = findSignatureByDate(presentDate - 1000);
+
+    // assert
+    expect(result).toBeNull();
+  });
 });
 
 describe("setAllSignatures", () => {
