@@ -61,10 +61,7 @@ export function findSignature(
  * @param date the Date.now() number id for the date
  */
 export function findSignatureByDate(date: number): Signature | null {
-  const matchingSignature = _signatureCollection.find(
-    (signature) => signature.date === date
-  );
-  return matchingSignature ? { ...matchingSignature } : null;
+  return findSignature({ date });
 }
 
 /**
