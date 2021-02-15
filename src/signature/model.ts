@@ -34,11 +34,13 @@ let _signatureCollection: SignatureCollection = [];
 
 /**
  * Finds the first signature with the matching data.
- * Returns null if there is no matching signature
- * @param date the Date.now() number id for the date
+ * Returns null if there is no matching signature.
+ *
+ * @param signatureMatcher the properties to match against
  */
 export function findSignature(
-  signatureMatcher: Partial<Signature>
+  signatureMatcher: Partial<Signature> // same keys, optional properties
+  // https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype
 ): Signature | null {
   // type assertion since Object.entries loses type of keys and values
   const matcherEntries = Object.entries(signatureMatcher) as [
@@ -76,6 +78,25 @@ export function findSignatureByDateOrFail(date: number): Signature {
     return signature;
   } else {
     throw new Error(`No signature exists with the date ${date}`);
+  }
+}
+
+/**
+ * Finds the first signature with the matching data.
+ * Throws an error if there is no matching signature.
+ *
+ * @param signatureMatcher the properties to match against
+ */
+export function findSignatureOrFail(
+  signatureMatcher: Partial<Signature>
+): Signature {
+  const signature = findSignature(signatureMatcher);
+  if (signature) {
+    return signature;
+  } else {
+    throw new Error(
+      `No signature exists with the data ${JSON.stringify(signatureMatcher)}`
+    );
   }
 }
 

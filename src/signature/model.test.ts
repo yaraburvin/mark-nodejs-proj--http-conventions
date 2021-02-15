@@ -5,6 +5,7 @@ import {
   findSignatureByDateOrFail,
   insertSignature,
   findSignature,
+  findSignatureOrFail,
 } from "./model";
 
 describe("getAllSignatures", () => {
@@ -76,7 +77,7 @@ describe("findSignature", () => {
     const shouldNotMatch = findSignature({ date: dateOne, name: "Carrot" });
 
     // assert
-    // empty matcher just finds the first one
+    // design decision: empty matcher just finds the first one
     expect(emptyMatcher).toStrictEqual(referenceSignatures[0]);
     expect(matchOnSecondDate).toStrictEqual(referenceSignatures[1]);
     expect(matchOnCarrotName).toStrictEqual(referenceSignatures[2]);
@@ -196,6 +197,58 @@ describe("findSignatureByDateOrFail", () => {
     // assert
     expect(() => {
       findSignatureByDateOrFail(presentDate - 1000);
+    }).toThrowError();
+  });
+
+  it("is resistant to accidental mutation", () => {
+    // setup
+    const presentDate = Date.now();
+    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+
+    // act
+    const signature = findSignatureByDate(presentDate);
+    signature!.name = "WAKKA WAKKA";
+
+    // assert: still finds a name of Apple
+    expect(findSignatureByDate(presentDate)).toHaveProperty("name", "Apple");
+  });
+});
+
+describe("findSignatureOrFail", () => {
+  it("returns a given signature if it can find it", () => {
+    // setup
+    const [dateOne, dateTwo, dateThree] = [
+      // use addition to ensure different milliseconds
+      Date.now(),
+      Date.now() + 1,
+      Date.now() + 2,
+    ];
+    const referenceSignatures = [
+      { date: dateOne, name: "Apple" },
+      { date: dateTwo, name: "Banana", message: "holla" },
+      { date: dateThree, name: "Carrot", message: "holla" },
+    ];
+    setAllSignatures(referenceSignatures);
+
+    // act
+    const sigOne = findSignatureOrFail({ name: "Apple" });
+    const sigTwo = findSignatureOrFail({ message: "holla" });
+    const sigThree = findSignatureOrFail({ name: "Carrot", message: "holla" });
+
+    // assert
+    expect(sigOne).toStrictEqual(referenceSignatures[0]);
+    expect(sigTwo).toStrictEqual(referenceSignatures[1]);
+    expect(sigThree).toStrictEqual(referenceSignatures[2]);
+  });
+
+  it("throws an error no signature exists with that date", () => {
+    // setup
+    const presentDate = Date.now();
+    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+
+    // assert
+    expect(() => {
+      findSignatureOrFail({ name: "Date" });
     }).toThrowError();
   });
 
