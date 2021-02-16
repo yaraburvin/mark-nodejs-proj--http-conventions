@@ -144,8 +144,9 @@ export function updateSignature(
 ): Signature | null {
   const matchingIndex = findIndexOfSignature(matcher);
 
-  // if matching index is null, no update to make
-  if (matchingIndex === null /* !matchingIndex breaks for index of 0 */) {
+  // !matchingIndex breaks for index of 0
+  if (matchingIndex === null) {
+    // nothing to update - so early return
     return null;
   }
 

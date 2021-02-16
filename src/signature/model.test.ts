@@ -375,14 +375,16 @@ describe("setAllSignatures", () => {
 describe("updateSignature", () => {
   it("matches a single signature with the updated values", () => {
     // setup
-    const [dateOne, dateTwo] = [
+    const [dateOne, dateTwo, dateThree] = [
       // use addition to ensure different milliseconds
       Date.now(),
       Date.now() + 1,
+      Date.now() + 2,
     ];
     const referenceSignatures = [
-      { date: dateOne, name: "Apple", message: "holla" },
-      { date: dateTwo, name: "Banana", message: "holla" },
+      { date: dateOne, name: "Apple" },
+      { date: dateTwo, name: "Apple", message: "holla" },
+      { date: dateThree, name: "Banana", message: "holla" },
     ];
     setAllSignatures(referenceSignatures);
 
@@ -394,10 +396,42 @@ describe("updateSignature", () => {
 
     // assert
     const signatures = getAllSignatures();
-    expect(signatures).toHaveLength(2);
-    expect(signatures).toMatchObject([
-      { date: dateOne, name: "Apple", message: "message one!" },
-      { date: dateTwo, name: "Banana", message: "message two!" },
+    expect(signatures).toHaveLength(3);
+    expect(signatures).toStrictEqual([
+      { date: dateOne, name: "Apple" },
+      { date: dateTwo, name: "Apple", message: "message one!" },
+      { date: dateThree, name: "Banana", message: "message two!" },
+    ]);
+  });
+
+  it("copes with case where matching signature has index 0", () => {
+    // setup
+    const [dateOne, dateTwo, dateThree] = [
+      // use addition to ensure different milliseconds
+      Date.now(),
+      Date.now() + 1,
+      Date.now() + 2,
+    ];
+    const referenceSignatures = [
+      { date: dateOne, name: "Apple" },
+      { date: dateTwo, name: "Apple", message: "holla" },
+      { date: dateThree, name: "Banana", message: "holla" },
+    ];
+    setAllSignatures(referenceSignatures);
+
+    // act: change first match with Apple to have a name of Carrot
+    updateSignature({ name: "Apple" }, { name: "Carrot" });
+    // act: change first match with Apple to have a name of Carrot
+    //  (which should now be index 1 since index 0 has been changed)
+    updateSignature({ name: "Apple" }, { name: "Carrot" });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toHaveLength(3);
+    expect(signatures).toStrictEqual([
+      { date: dateOne, name: "Carrot" },
+      { date: dateTwo, name: "Carrot", message: "holla" },
+      { date: dateThree, name: "Banana", message: "holla" },
     ]);
   });
 });
