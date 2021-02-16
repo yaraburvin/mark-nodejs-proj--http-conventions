@@ -404,6 +404,34 @@ describe("updateSignature", () => {
     ]);
   });
 
+  it("Can update keys different to those matched against", () => {
+    // setup
+    const presentDate = Date.now();
+    const referenceSignatures = [{ date: presentDate, name: "Apple" }];
+    setAllSignatures(referenceSignatures);
+
+    updateSignature({ date: presentDate }, { name: "Banana" });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toStrictEqual([{ date: presentDate, name: "Banana" }]);
+  });
+
+  it("Can add a previously absent key", () => {
+    // setup
+    const presentDate = Date.now();
+    const referenceSignatures = [{ date: presentDate, name: "Apple" }];
+    setAllSignatures(referenceSignatures);
+
+    updateSignature({ date: presentDate }, { message: "hi!" });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toStrictEqual([
+      { date: presentDate, name: "Apple", message: "hi!" },
+    ]);
+  });
+
   it("copes with case where matching signature has index 0", () => {
     // setup
     const [dateOne, dateTwo, dateThree] = [
