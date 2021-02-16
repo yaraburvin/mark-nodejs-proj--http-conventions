@@ -15,6 +15,12 @@ export interface Signature {
 export type DatelessSignature = Omit<Signature, "date">;
 
 /**
+ * All keys set as optional for a Signature
+ * https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype
+ */
+export type PartialSignature = Partial<Signature>;
+
+/**
  * A data structure to store signatures.
  */
 export type SignatureCollection = Signature[];
@@ -39,8 +45,7 @@ let _signatureCollection: SignatureCollection = [];
  * @param signatureMatcher the properties to match against
  */
 export function findSignature(
-  signatureMatcher: Partial<Signature> // same keys, optional properties
-  // https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype
+  signatureMatcher: PartialSignature
 ): Signature | null {
   // type assertion since Object.entries loses type of keys and values
   const matcherEntries = Object.entries(signatureMatcher) as [
@@ -56,6 +61,8 @@ export function findSignature(
   });
   return matchingSignature ? { ...matchingSignature } : null;
 }
+
+export function findIndexOfSignature() {}
 
 /**
  * Finds the first signature with the matching date.
@@ -88,7 +95,7 @@ export function findSignatureByDateOrFail(date: number): Signature {
  * @param signatureMatcher the properties to match against
  */
 export function findSignatureOrFail(
-  signatureMatcher: Partial<Signature>
+  signatureMatcher: PartialSignature
 ): Signature {
   const signature = findSignature(signatureMatcher);
   if (signature) {
@@ -120,4 +127,24 @@ export function insertSignature(signature: DatelessSignature): Signature {
 
 export function setAllSignatures(signatures: SignatureCollection): void {
   _signatureCollection = protectFromMutations(signatures);
+}
+
+export function updateSignature(
+  matcher: PartialSignature,
+  updateProperties: PartialSignature
+): Signature | null {
+  const allSignatures = getAllSignatures();
+  const matchingSignature = findSignature(matcher);
+
+  // if no matching signature, no update to make
+  if (!matchingSignature) return null;
+
+  const indexOfMatchingSignature = allSignatures.indexOf(matchingSignature);
+  const updatedSignature = { ...matchingSignature, ...updateProperties };
+
+  // set to be updated
+  allSignatures[indexOfMatchingSignature] = updatedSignature;
+  console.log(allSignatures);
+  setAllSignatures(allSignatures);
+  return updatedSignature;
 }

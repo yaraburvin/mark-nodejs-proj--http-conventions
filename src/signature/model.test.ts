@@ -6,6 +6,8 @@ import {
   insertSignature,
   findSignature,
   findSignatureOrFail,
+  updateSignature,
+  findIndexOfSignature,
 } from "./model";
 
 describe("getAllSignatures", () => {
@@ -48,6 +50,59 @@ describe("getAllSignatures", () => {
   });
 });
 
+describe("findIndexOfSignature", () => {
+  it("returns the index of the first signature that matches the data passed in", () => {
+    // setup
+    const [dateOne, dateTwo, dateThree, dateFour] = [
+      // use addition to ensure different milliseconds
+      Date.now(),
+      Date.now() + 1,
+      Date.now() + 2,
+      Date.now() + 3,
+    ];
+    const referenceSignatures = [
+      { date: dateOne, name: "Apple" },
+      { date: dateTwo, name: "Apple", message: "Not my first signature" },
+      { date: dateThree, name: "Carrot" },
+      { date: dateFour, name: "Carrot", message: "Not my first message" },
+    ];
+    setAllSignatures(referenceSignatures);
+
+    // act
+    const emptyMatcher = findIndexOfSignature({});
+    const matchOnSecondDate = findIndexOfSignature({ date: dateTwo });
+    const matchOnCarrotName = findIndexOfSignature({ name: "Carrot" });
+    const matchOnCarrotNameAndMessage = findIndexOfSignature({
+      name: "Carrot",
+      message: "Not my first message",
+    });
+    const shouldNotMatch = findIndexOfSignature({
+      date: dateOne,
+      name: "Carrot",
+    });
+
+    // assert
+    // design decision: empty matcher just finds the first one
+    expect(emptyMatcher).toStrictEqual(0);
+    expect(matchOnSecondDate).toStrictEqual(1);
+    expect(matchOnCarrotName).toStrictEqual(2);
+    expect(matchOnCarrotNameAndMessage).toStrictEqual(3);
+    expect(shouldNotMatch).toBeNull();
+  });
+
+  it("returns null if no signature exists with that date", () => {
+    // setup
+    const presentDate = Date.now();
+    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+
+    // act
+    const result = findIndexOfSignature({ name: "Carrot" });
+
+    // assert
+    expect(result).toBeNull();
+  });
+});
+
 describe("findSignature", () => {
   it("returns the first signature that matches the data passed in", () => {
     // setup
@@ -85,13 +140,13 @@ describe("findSignature", () => {
     expect(shouldNotMatch).toBeNull();
   });
 
-  it("returns null if no signature exists with that date", () => {
+  it("returns null if no matching signature exists", () => {
     // setup
     const presentDate = Date.now();
     setAllSignatures([{ date: presentDate, name: "Apple" }]);
 
     // act
-    const result = findSignatureByDate(presentDate - 1000);
+    const result = findSignature({ name: "Carrot" });
 
     // assert
     expect(result).toBeNull();
@@ -103,11 +158,14 @@ describe("findSignature", () => {
     setAllSignatures([{ date: presentDate, name: "Apple" }]);
 
     // act
-    const signature = findSignatureByDate(presentDate);
+    const signature = findSignature({ date: presentDate });
     signature!.name = "WAKKA WAKKA";
 
     // assert: still finds a name of Apple
-    expect(findSignatureByDate(presentDate)).toHaveProperty("name", "Apple");
+    expect(findSignature({ date: presentDate })).toHaveProperty(
+      "name",
+      "Apple"
+    );
   });
 });
 
@@ -206,11 +264,14 @@ describe("findSignatureByDateOrFail", () => {
     setAllSignatures([{ date: presentDate, name: "Apple" }]);
 
     // act
-    const signature = findSignatureByDate(presentDate);
+    const signature = findSignatureByDateOrFail(presentDate);
     signature!.name = "WAKKA WAKKA";
 
     // assert: still finds a name of Apple
-    expect(findSignatureByDate(presentDate)).toHaveProperty("name", "Apple");
+    expect(findSignatureByDateOrFail(presentDate)).toHaveProperty(
+      "name",
+      "Apple"
+    );
   });
 });
 
@@ -258,11 +319,14 @@ describe("findSignatureOrFail", () => {
     setAllSignatures([{ date: presentDate, name: "Apple" }]);
 
     // act
-    const signature = findSignatureByDate(presentDate);
+    const signature = findSignatureOrFail({ date: presentDate });
     signature!.name = "WAKKA WAKKA";
 
     // assert: still finds a name of Apple
-    expect(findSignatureByDate(presentDate)).toHaveProperty("name", "Apple");
+    expect(findSignatureOrFail({ date: presentDate })).toHaveProperty(
+      "name",
+      "Apple"
+    );
   });
 });
 
@@ -304,6 +368,37 @@ describe("setAllSignatures", () => {
     expect(signatures).toMatchObject([
       { name: "Lisa Simpson" },
       { name: "Bart Simpson" },
+    ]);
+  });
+});
+
+describe("updateSignature", () => {
+  it("matches a single signature with the updated values", () => {
+    // setup
+    const [dateOne, dateTwo, dateThree] = [
+      // use addition to ensure different milliseconds
+      Date.now(),
+      Date.now() + 1,
+      Date.now() + 2,
+    ];
+    const referenceSignatures = [
+      { date: dateOne, name: "Apple", message: "holla" },
+      { date: dateTwo, name: "Banana", message: "holla" },
+    ];
+    setAllSignatures(referenceSignatures);
+
+    // act: change message of first signature with holla message
+    updateSignature({ message: "holla" }, { message: "message one!" });
+    // act: change message of first signature with holla message
+    //  (which should now be Banana's message since the first has been changed)
+    updateSignature({ message: "holla" }, { message: "message two!" });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toHaveLength(2);
+    expect(signatures).toMatchObject([
+      { date: dateTwo, name: "Apple", message: "message one!" },
+      { date: dateThree, name: "Banana", message: "message two!" },
     ]);
   });
 });
