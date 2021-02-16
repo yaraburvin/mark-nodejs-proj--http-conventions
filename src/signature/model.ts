@@ -39,14 +39,21 @@ export type SignatureCollection = Signature[];
 let _signatureCollection: SignatureCollection = [];
 
 /**
- * Finds the first signature with the matching data.
+ * Finds the index of the first signature with the matching data.
  * Returns null if there is no matching signature.
  *
  * @param signatureMatcher the properties to match against
  */
 export function findIndexOfSignature(
   signatureMatcher: PartialSignature
-): number | null {}
+): number | null {
+  for (let [index, signature] of Object.entries(getAllSignatures())) {
+    if (isPartialMatch(signature, signatureMatcher)) {
+      return parseInt(index);
+    }
+  }
+  return null;
+}
 
 /**
  * Finds the first signature with the matching data.
@@ -57,15 +64,9 @@ export function findIndexOfSignature(
 export function findSignature(
   signatureMatcher: PartialSignature
 ): Signature | null {
-  // type assertion since Object.entries loses type of keys and values
-  const matcherEntries = ObjectEntries(signatureMatcher);
-  const matchingSignature = _signatureCollection.find((signature) => {
-    // return true only if all keys and matching values are present
-    for (let [key, value] of matcherEntries) {
-      if (signature[key] !== value) return false;
-    }
-    return true;
-  });
+  const matchingSignature = getAllSignatures().find((signature) =>
+    isPartialMatch(signature, signatureMatcher)
+  );
   return matchingSignature ? { ...matchingSignature } : null;
 }
 
@@ -128,6 +129,17 @@ export function insertSignature(signature: DatelessSignature): Signature {
   };
   _signatureCollection.push(signatureToAdd);
   return signatureToAdd;
+}
+
+export function isPartialMatch(
+  signature: Signature,
+  matcher: PartialSignature
+): boolean {
+  const matcherEntries = ObjectEntries(matcher);
+  for (let [key, value] of matcherEntries) {
+    if (signature[key] !== value) return false;
+  }
+  return true;
 }
 
 export function setAllSignatures(signatures: SignatureCollection): void {
