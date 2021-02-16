@@ -142,18 +142,20 @@ export function updateSignature(
   matcher: PartialSignature,
   updateProperties: PartialSignature
 ): Signature | null {
+  const matchingIndex = findIndexOfSignature(matcher);
+
+  // if matching index is null, no update to make
+  if (matchingIndex === null /* !matchingIndex breaks for index of 0 */) {
+    return null;
+  }
+
   const allSignatures = getAllSignatures();
-  const matchingSignature = findSignature(matcher);
+  const updatedSignature = {
+    ...allSignatures[matchingIndex],
+    ...updateProperties,
+  };
+  allSignatures[matchingIndex] = updatedSignature;
 
-  // if no matching signature, no update to make
-  if (!matchingSignature) return null;
-
-  const indexOfMatchingSignature = allSignatures.indexOf(matchingSignature);
-  const updatedSignature = { ...matchingSignature, ...updateProperties };
-
-  // set to be updated
-  allSignatures[indexOfMatchingSignature] = updatedSignature;
-  console.log(allSignatures);
   setAllSignatures(allSignatures);
   return updatedSignature;
 }
