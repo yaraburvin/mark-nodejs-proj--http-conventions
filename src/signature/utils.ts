@@ -1,3 +1,9 @@
+/**
+ * Checks whether the second argument is an object with subset properties of the first object, by checking for shallow equality between the key-value pairs.
+ *
+ * @param wholeObject
+ * @param partialMatcher
+ */
 export function isObjectSubset<T>(
   wholeObject: T,
   partialMatcher: Partial<T>

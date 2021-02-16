@@ -17,6 +17,13 @@ describe("isObjectSubset", () => {
         isObjectSubset({ message: "hi", count: 4 }, { message: "hi", count: 4 })
       ).toBe(true);
     });
+
+    it("treats a value of undefined like an absent property", () => {
+      expect(
+        // @ts-ignore - checking runtime behaviour
+        isObjectSubset({ message: "hi" }, { message: "hi", count: undefined })
+      ).toBe(true);
+    });
   });
 
   describe("negative cases", () => {
