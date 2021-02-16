@@ -48,7 +48,7 @@ export function findIndexOfSignature(
   signatureMatcher: PartialSignature
 ): number | null {
   for (let [index, signature] of Object.entries(getAllSignatures())) {
-    if (isPartialMatch(signature, signatureMatcher)) {
+    if (isObjectSubset(signature, signatureMatcher)) {
       return parseInt(index);
     }
   }
@@ -65,7 +65,7 @@ export function findSignature(
   signatureMatcher: PartialSignature
 ): Signature | null {
   const matchingSignature = getAllSignatures().find((signature) =>
-    isPartialMatch(signature, signatureMatcher)
+    isObjectSubset(signature, signatureMatcher)
   );
   return matchingSignature ? { ...matchingSignature } : null;
 }
@@ -131,13 +131,13 @@ export function insertSignature(signature: DatelessSignature): Signature {
   return signatureToAdd;
 }
 
-export function isPartialMatch(
-  signature: Signature,
-  matcher: PartialSignature
+export function isObjectSubset<T>(
+  wholeObject: T,
+  partialMatcher: Partial<T>
 ): boolean {
-  const matcherEntries = ObjectEntries(matcher);
+  const matcherEntries = ObjectEntries(partialMatcher);
   for (let [key, value] of matcherEntries) {
-    if (signature[key] !== value) return false;
+    if (wholeObject[key] !== value) return false;
   }
   return true;
 }
