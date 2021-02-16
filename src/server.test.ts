@@ -21,12 +21,12 @@ describe("POST /signatures", () => {
     expect(response.body.data).toHaveProperty("signature");
   });
 
-  test("when given malformed signature data, it responds with a status of 400, a status of success and signature in data", async () => {
+  test("when not provided with a name in the request body, it responds with a status of 400, a status of success and signature in data", async () => {
     const response = await supertest(app).post("/signatures").send({
       naem: "Noddy", // deliberate typo
     });
     expect(response.status).toBe(400);
-    expect(response.body.status).toBe("error");
+    expect(response.body.status).toBe("fail");
     expect(response.body.data).toMatchObject({
       name: "A name is required",
     });

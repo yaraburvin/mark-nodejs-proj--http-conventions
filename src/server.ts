@@ -8,11 +8,36 @@ const app = express();
  */
 app.use(cors());
 
-app.get("/", (req, res) => {
-  res.json({
-    message:
-      "Welcome to Digipet, the totally original digital pet game! Keep your pet happy, healthy and well-disciplined to win the game. If in doubt, check out the /instructions endpoint!",
+/**
+ * Middleware to parse a JSON body in requests
+ */
+app.use(express.json());
+
+app.get("/signatures", (req, res) => {
+  res.status(200).send({
+    status: "success",
+    data: {
+      signatures: [], // TODO: populate from 'database'
+    },
   });
+});
+
+app.post("/signatures", (req, res) => {
+  if (typeof req.body.name === "string") {
+    res.status(201).send({
+      status: "success",
+      data: {
+        signature: {}, // TODO: populate from 'database'
+      },
+    });
+  } else {
+    res.status(400).send({
+      status: "fail",
+      data: {
+        name: "A name is required",
+      },
+    });
+  }
 });
 
 export default app;
