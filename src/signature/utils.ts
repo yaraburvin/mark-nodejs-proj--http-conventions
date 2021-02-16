@@ -30,14 +30,3 @@ type Entry<T, K extends keyof T> = [K, T[K]];
 export function ObjectEntries<T extends object>(obj: T): Entry<T, keyof T>[] {
   return Object.entries(obj) as Entry<T, keyof T>[];
 }
-
-export function protectFromMutations<T extends object>(objects: T[]): T[] {
-  /**
-   * Uses a spread inside of a map to prevent
-   *  accidental mutation: shallow copy of each
-   *  signature and then a new array containing them all
-   */
-  return objects.map((object) => ({
-    ...object,
-  }));
-}

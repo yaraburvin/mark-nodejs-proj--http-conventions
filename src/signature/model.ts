@@ -1,4 +1,5 @@
-import { isObjectSubset, protectFromMutations } from "./utils";
+import { cloneDeep } from "lodash";
+import { isObjectSubset } from "./utils";
 
 export interface Signature {
   /**
@@ -114,7 +115,8 @@ export function findSignatureOrFail(
 }
 
 export function getAllSignatures(): SignatureCollection {
-  return protectFromMutations(_signatureCollection);
+  // use a deep clone to prevent accidental mutation of _signatureCollection
+  return cloneDeep(_signatureCollection);
 }
 
 /**
@@ -132,7 +134,8 @@ export function insertSignature(signature: DatelessSignature): Signature {
 }
 
 export function setAllSignatures(signatures: SignatureCollection): void {
-  _signatureCollection = protectFromMutations(signatures);
+  // use a deep clone to prevent accidental mutation of _signatureCollection
+  _signatureCollection = cloneDeep(signatures);
 }
 
 export function updateSignature(
