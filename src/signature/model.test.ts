@@ -8,6 +8,7 @@ import {
   findSignatureOrFail,
   updateSignature,
   findIndexOfSignature,
+  removeSignature,
 } from "./model";
 
 describe("getAllSignatures", () => {
@@ -351,6 +352,48 @@ describe("insertSignature", () => {
     expect(typeof insertedSignature.date).toBe("number");
     // has not added it onto the original object
     expect(signatureToInsert).not.toHaveProperty("date");
+  });
+});
+
+describe("removeSignature", () => {
+  test("when there is a matching signature, it remove it and returns true", () => {
+    // setup
+    setAllSignatures([
+      { date: Date.now(), name: "Ada Lovelace" },
+      { date: Date.now() + 1, name: "Alan Turing" },
+    ]);
+
+    // act
+    const result = removeSignature({ name: "Ada Lovelace" });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toHaveLength(1);
+    expect(signatures).toMatchObject([
+      { name: "Ada Lovelace" },
+      { name: "Alan Turing" },
+    ]);
+    expect(result).toBe(true);
+  });
+
+  test("when there no matching signature, it returns false", () => {
+    // setup
+    setAllSignatures([
+      { date: Date.now(), name: "Ada Lovelace" },
+      { date: Date.now() + 1, name: "Alan Turing" },
+    ]);
+
+    // act
+    const result = removeSignature({ name: "Billy Jean" });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toHaveLength(2);
+    expect(signatures).toMatchObject([
+      { name: "Ada Lovelace" },
+      { name: "Alan Turing" },
+    ]);
+    expect(result).toBe(false);
   });
 });
 

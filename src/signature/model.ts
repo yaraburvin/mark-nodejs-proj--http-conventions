@@ -133,6 +133,21 @@ export function insertSignature(signature: DatelessSignature): Signature {
   return signatureToAdd;
 }
 
+/**
+ * Finds the first signature with the matching data.
+ * Returns null if there is no matching signature.
+ *
+ * @param signatureMatcher the properties to match against
+ */
+export function removeSignature(
+  signatureMatcher: PartialSignature
+): Signature | null {
+  const matchingSignature = getAllSignatures().find((signature) =>
+    isObjectSubset(signature, signatureMatcher)
+  );
+  return matchingSignature ? { ...matchingSignature } : null;
+}
+
 export function setAllSignatures(signatures: SignatureCollection): void {
   // use a deep clone to prevent accidental mutation of _signatureCollection
   _signatureCollection = cloneDeep(signatures);
