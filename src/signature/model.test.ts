@@ -372,14 +372,13 @@ describe("setAllSignatures", () => {
   });
 });
 
-describe.skip("updateSignature", () => {
+describe("updateSignature", () => {
   it("matches a single signature with the updated values", () => {
     // setup
-    const [dateOne, dateTwo, dateThree] = [
+    const [dateOne, dateTwo] = [
       // use addition to ensure different milliseconds
       Date.now(),
       Date.now() + 1,
-      Date.now() + 2,
     ];
     const referenceSignatures = [
       { date: dateOne, name: "Apple", message: "holla" },
@@ -397,8 +396,8 @@ describe.skip("updateSignature", () => {
     const signatures = getAllSignatures();
     expect(signatures).toHaveLength(2);
     expect(signatures).toMatchObject([
-      { date: dateTwo, name: "Apple", message: "message one!" },
-      { date: dateThree, name: "Banana", message: "message two!" },
+      { date: dateOne, name: "Apple", message: "message one!" },
+      { date: dateTwo, name: "Banana", message: "message two!" },
     ]);
   });
 });
