@@ -1,4 +1,4 @@
-import { ObjectEntries, protectFromMutations } from "./util";
+import { isObjectSubset, protectFromMutations } from "./utils";
 
 export interface Signature {
   /**
@@ -129,17 +129,6 @@ export function insertSignature(signature: DatelessSignature): Signature {
   };
   _signatureCollection.push(signatureToAdd);
   return signatureToAdd;
-}
-
-export function isObjectSubset<T>(
-  wholeObject: T,
-  partialMatcher: Partial<T>
-): boolean {
-  const matcherEntries = ObjectEntries(partialMatcher);
-  for (let [key, value] of matcherEntries) {
-    if (wholeObject[key] !== value) return false;
-  }
-  return true;
 }
 
 export function setAllSignatures(signatures: SignatureCollection): void {
