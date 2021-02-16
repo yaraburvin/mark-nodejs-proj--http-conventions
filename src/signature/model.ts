@@ -1,4 +1,4 @@
-import { protectFromMutations } from "./util";
+import { ObjectEntries, protectFromMutations } from "./util";
 
 export interface Signature {
   /**
@@ -44,14 +44,21 @@ let _signatureCollection: SignatureCollection = [];
  *
  * @param signatureMatcher the properties to match against
  */
+export function findIndexOfSignature(
+  signatureMatcher: PartialSignature
+): number | null {}
+
+/**
+ * Finds the first signature with the matching data.
+ * Returns null if there is no matching signature.
+ *
+ * @param signatureMatcher the properties to match against
+ */
 export function findSignature(
   signatureMatcher: PartialSignature
 ): Signature | null {
   // type assertion since Object.entries loses type of keys and values
-  const matcherEntries = Object.entries(signatureMatcher) as [
-    keyof Signature,
-    Signature[keyof Signature]
-  ][];
+  const matcherEntries = ObjectEntries(signatureMatcher);
   const matchingSignature = _signatureCollection.find((signature) => {
     // return true only if all keys and matching values are present
     for (let [key, value] of matcherEntries) {
@@ -61,8 +68,6 @@ export function findSignature(
   });
   return matchingSignature ? { ...matchingSignature } : null;
 }
-
-export function findIndexOfSignature() {}
 
 /**
  * Finds the first signature with the matching date.
