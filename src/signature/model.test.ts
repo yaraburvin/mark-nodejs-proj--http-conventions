@@ -369,10 +369,7 @@ describe("removeSignature", () => {
     // assert
     const signatures = getAllSignatures();
     expect(signatures).toHaveLength(1);
-    expect(signatures).toMatchObject([
-      { name: "Ada Lovelace" },
-      { name: "Alan Turing" },
-    ]);
+    expect(signatures).toMatchObject([{ name: "Alan Turing" }]);
     expect(result).toBe(true);
   });
 

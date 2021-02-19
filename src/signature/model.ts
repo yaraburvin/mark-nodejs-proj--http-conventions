@@ -139,13 +139,14 @@ export function insertSignature(signature: DatelessSignature): Signature {
  *
  * @param signatureMatcher the properties to match against
  */
-export function removeSignature(
-  signatureMatcher: PartialSignature
-): Signature | null {
-  const matchingSignature = getAllSignatures().find((signature) =>
-    isObjectSubset(signature, signatureMatcher)
+export function removeSignature(signatureMatcher: PartialSignature): boolean {
+  const matchingIndex = findIndexOfSignature(signatureMatcher);
+  if (matchingIndex === null /* let 0 pass through */) return false;
+  const filteredSignatures = getAllSignatures().filter(
+    (_, idx) => idx !== matchingIndex
   );
-  return matchingSignature ? { ...matchingSignature } : null;
+  setAllSignatures(filteredSignatures);
+  return true;
 }
 
 export function setAllSignatures(signatures: SignatureCollection): void {
