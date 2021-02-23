@@ -10,6 +10,7 @@ import {
   findIndexOfSignature,
   removeSignature,
   updateSignatureByEpoch,
+  removeSignatureByEpoch,
 } from "./model";
 
 describe("getAllSignatures", () => {
@@ -383,6 +384,47 @@ describe("removeSignature", () => {
 
     // act
     const result = removeSignature({ name: "Billy Jean" });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toHaveLength(2);
+    expect(signatures).toMatchObject([
+      { name: "Ada Lovelace" },
+      { name: "Alan Turing" },
+    ]);
+    expect(result).toBe(false);
+  });
+});
+
+describe("removeSignatureByEpoch", () => {
+  test("when there is a matching signature, it remove it and returns true", () => {
+    // setup
+    const presentDate = Date.now();
+    setAllSignatures([
+      { epochMs: presentDate, name: "Ada Lovelace" },
+      { epochMs: presentDate + 1, name: "Alan Turing" },
+    ]);
+
+    // act
+    const result = removeSignatureByEpoch(presentDate);
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toHaveLength(1);
+    expect(signatures).toMatchObject([{ name: "Alan Turing" }]);
+    expect(result).toBe(true);
+  });
+
+  test("when there no matching signature, it returns false", () => {
+    // setup
+    const presentDate = Date.now();
+    setAllSignatures([
+      { epochMs: presentDate, name: "Ada Lovelace" },
+      { epochMs: presentDate + 1, name: "Alan Turing" },
+    ]);
+
+    // act
+    const result = removeSignatureByEpoch(presentDate + 2);
 
     // assert
     const signatures = getAllSignatures();

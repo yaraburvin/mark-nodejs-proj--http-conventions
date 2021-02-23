@@ -151,6 +151,10 @@ export function removeSignature(signatureMatcher: PartialSignature): boolean {
   return true;
 }
 
+export function removeSignatureByEpoch(epochMs: number): boolean {
+  return removeSignature({ epochMs });
+}
+
 export function setAllSignatures(signatures: SignatureCollection): void {
   // use a deep clone to prevent accidental mutation of _signatureCollection
   _signatureCollection = cloneDeep(signatures);
