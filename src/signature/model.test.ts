@@ -9,6 +9,7 @@ import {
   updateSignature,
   findIndexOfSignature,
   removeSignature,
+  updateSignatureByEpoch,
 } from "./model";
 
 describe("getAllSignatures", () => {
@@ -413,7 +414,7 @@ describe("setAllSignatures", () => {
 });
 
 describe("updateSignature", () => {
-  it("matches a single signature with the updated values", () => {
+  it("updates a single signature with the matched values", () => {
     // setup
     const [dateOne, dateTwo, dateThree] = [
       // use addition to ensure different milliseconds
@@ -502,6 +503,54 @@ describe("updateSignature", () => {
       { epochMs: dateOne, name: "Carrot" },
       { epochMs: dateTwo, name: "Carrot", message: "holla" },
       { epochMs: dateThree, name: "Banana", message: "holla" },
+    ]);
+  });
+});
+
+describe("updateSignatureByEpoch", () => {
+  it("updates single signature with the given epoch identifier", () => {
+    // setup
+    const [dateOne, dateTwo, dateThree] = [
+      // use addition to ensure different milliseconds
+      Date.now(),
+      Date.now() + 1,
+      Date.now() + 2,
+    ];
+    const referenceSignatures = [
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Apple", message: "holla" },
+      { epochMs: dateThree, name: "Banana", message: "holla" },
+    ];
+    setAllSignatures(referenceSignatures);
+
+    // act: change messages of specified signatures
+    updateSignatureByEpoch(dateTwo, {
+      name: "Carrot",
+      message: "message one!",
+    });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toHaveLength(3);
+    expect(signatures).toStrictEqual([
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Carrot", message: "message one!" },
+      { epochMs: dateThree, name: "Banana", message: "holla" },
+    ]);
+  });
+
+  it("Can add a previously absent key", () => {
+    // setup
+    const presentDate = Date.now();
+    const referenceSignatures = [{ epochMs: presentDate, name: "Apple" }];
+    setAllSignatures(referenceSignatures);
+
+    updateSignatureByEpoch(presentDate, { message: "hi!" });
+
+    // assert
+    const signatures = getAllSignatures();
+    expect(signatures).toStrictEqual([
+      { epochMs: presentDate, name: "Apple", message: "hi!" },
     ]);
   });
 });

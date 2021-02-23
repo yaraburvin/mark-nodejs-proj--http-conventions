@@ -178,3 +178,10 @@ export function updateSignature(
   setAllSignatures(allSignatures);
   return updatedSignature;
 }
+
+export function updateSignatureByEpoch(
+  epochMs: number,
+  updateProperties: PartialSignature
+): Signature | null {
+  return updateSignature({ epochMs }, updateProperties);
+}
