@@ -5,7 +5,8 @@ const app = express();
 
 /**
  * Simplest way to connect a front-end. Unimportant detail right now, although you can read more: https://flaviocopes.com/express-cors/
- */
+ */ import { findSignatureByEpoch } from "./signature/model";
+
 app.use(cors());
 
 /**
@@ -27,7 +28,7 @@ app.post("/signatures", (req, res) => {
     res.status(201).send({
       status: "success",
       data: {
-        signature: {}, // TODO: populate from 'database'
+        signature: {}, // TODO: populate with data
       },
     });
   } else {
@@ -35,6 +36,28 @@ app.post("/signatures", (req, res) => {
       status: "fail",
       data: {
         name: "A name is required",
+      },
+    });
+  }
+});
+
+app.get("/signatures/:epoch", (req, res) => {
+  // :epoch is a route parameter
+  //  see documentation: https://expressjs.com/en/guide/routing.html
+  const epochMs = parseInt(req.params.epoch); // params are string type
+  const signature = findSignatureByEpoch(epochMs);
+  if (signature) {
+    res.status(200).send({
+      status: "success",
+      data: {
+        signature,
+      },
+    });
+  } else {
+    res.status(404).send({
+      status: "fail",
+      data: {
+        epochMs: "Could not find a signature with that epoch identifier",
       },
     });
   }
