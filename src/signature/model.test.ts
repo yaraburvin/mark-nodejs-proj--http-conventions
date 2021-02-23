@@ -487,6 +487,26 @@ describe("updateSignature", () => {
     ]);
   });
 
+  it("returns the updated signature", () => {
+    // arrange
+    const presentDate = Date.now();
+    const referenceSignatures = [
+      { epochMs: presentDate, name: "Apple" },
+      { epochMs: presentDate + 1, name: "Apple", message: "holla" },
+      { epochMs: presentDate + 2, name: "Banana", message: "holla" },
+    ];
+    setAllSignatures(referenceSignatures);
+
+    // act
+    const result = updateSignature(
+      { name: "Apple", message: "holla" },
+      { name: "Carrot" }
+    );
+
+    // assert: returns updated signature
+    expect(result).toStrictEqual({ ...referenceSignatures[1], name: "Carrot" });
+  });
+
   it("Can update keys different to those matched against", () => {
     // setup
     const presentDate = Date.now();
@@ -581,7 +601,24 @@ describe("updateSignatureByEpoch", () => {
     ]);
   });
 
-  it("Can add a previously absent key", () => {
+  it("returns the updated signature", () => {
+    // arrange
+    const presentDate = Date.now();
+    const referenceSignatures = [
+      { epochMs: presentDate, name: "Apple" },
+      { epochMs: presentDate + 1, name: "Apple", message: "holla" },
+      { epochMs: presentDate + 2, name: "Banana", message: "holla" },
+    ];
+    setAllSignatures(referenceSignatures);
+
+    // act
+    const result = updateSignatureByEpoch(presentDate + 2, { name: "Carrot" });
+
+    // assert: returns updated signature
+    expect(result).toStrictEqual({ ...referenceSignatures[2], name: "Carrot" });
+  });
+
+  it("can add a previously absent key", () => {
     // setup
     const presentDate = Date.now();
     const referenceSignatures = [{ epochMs: presentDate, name: "Apple" }];

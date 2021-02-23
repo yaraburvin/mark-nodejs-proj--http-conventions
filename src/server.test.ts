@@ -1,6 +1,10 @@
 import supertest from "supertest";
 import app from "./server";
-import { findSignatureByEpoch, Signature } from "./signature/model";
+import {
+  findSignatureByEpoch,
+  Signature,
+  updateSignatureByEpoch,
+} from "./signature/model";
 
 // mock all the model functions
 jest.mock("./signature/model");
@@ -68,7 +72,7 @@ describe("GET /signatures/:epoch", () => {
   });
 });
 
-describe("PATCH /signatures/:epoch", () => {
+describe.skip("PATCH /signatures/:epoch", () => {
   const PASSING_EPOCH = 1614096121305;
   const PASSING_SIGNATURE = {
     epochMs: PASSING_EPOCH,
@@ -77,12 +81,12 @@ describe("PATCH /signatures/:epoch", () => {
 
   beforeEach(() => {
     // type guard so we can use the mock API inside
-    if (jest.isMockFunction(findSignatureByEpoch)) {
+    if (jest.isMockFunction(updateSignatureByEpoch)) {
       // Reset the mock call and return history before each test
-      findSignatureByEpoch.mockReset();
+      updateSignatureByEpoch.mockReset();
 
       // mock behaviour for tests
-      findSignatureByEpoch.mockImplementation(
+      updateSignatureByEpoch.mockImplementation(
         (epochMs: number): Signature | null => {
           // return a signature for a specific epochMs, otherwise null
           return epochMs === PASSING_SIGNATURE.epochMs
