@@ -78,6 +78,10 @@ describe.skip("PATCH /signatures/:epoch", () => {
     epochMs: PASSING_EPOCH,
     name: "Indiana Jones",
   };
+  const UPDATE_PROPERTIES = {
+    message:
+      "If you want to be a good archeologist, you gotta get out of the library!",
+  };
 
   beforeEach(() => {
     // type guard so we can use the mock API inside
@@ -87,10 +91,14 @@ describe.skip("PATCH /signatures/:epoch", () => {
 
       // mock behaviour for tests
       updateSignatureByEpoch.mockImplementation(
-        (epochMs: number): Signature | null => {
-          // return a signature for a specific epochMs, otherwise null
+        (
+          epochMs: number,
+          updateProperties: Partial<Signature>
+        ): Signature | null => {
+          // simulate updating a signature for a specific epochMs
+          // otherwise return null
           return epochMs === PASSING_SIGNATURE.epochMs
-            ? PASSING_SIGNATURE
+            ? { ...PASSING_SIGNATURE, ...updateProperties }
             : null;
         }
       );
@@ -98,25 +106,30 @@ describe.skip("PATCH /signatures/:epoch", () => {
   });
 
   it("calls findSignatureByEpoch with the given epoch", async () => {
-    await supertest(app).get("/signatures/1614095562950");
+    await supertest(app)
+      .patch("/signatures/1614095562950")
+      .send(UPDATE_PROPERTIES);
     expect(findSignatureByEpoch).toHaveBeenCalledWith(1614095562950);
   });
 
-  test("when findSignatureByEpoch returns a signature, it returns a 200 with the given epoch", async () => {
-    const response = await supertest(app).get(
-      `/signatures/${PASSING_SIGNATURE.epochMs}`
-    );
-    expect(findSignatureByEpoch).toReturnWith(PASSING_SIGNATURE);
+  test("when updateSignatureByEpoch returns a signature, it returns a 200 with the given epoch", async () => {
+    const response = await supertest(app)
+      .patch(`/signatures/${PASSING_SIGNATURE.epochMs}`)
+      .send(UPDATE_PROPERTIES);
+    expect(findSignatureByEpoch).toReturnWith({
+      ...PASSING_SIGNATURE,
+      ...UPDATE_PROPERTIES,
+    });
     expect(response.status).toBe(200);
     expect(response.body.status).toBe("success");
     expect(response.body.data).toHaveProperty("signature");
   });
 
-  test("when findSignatureByEpoch returns null, it returns a 404 with information about not managing to find a signature", async () => {
-    // add one to get a non-passing epochMs value
-    const response = await supertest(app).get(
-      `/signatures/${PASSING_SIGNATURE.epochMs + 1}`
-    );
+  test("when updateSignatureByEpoch returns null, it returns a 404 with information about not managing to find a signature", async () => {
+    // add one to patch a non-passing epochMs value
+    const response = await supertest(app)
+      .patch(`/signatures/${PASSING_SIGNATURE.epochMs + 1}`)
+      .send(UPDATE_PROPERTIES);
     expect(findSignatureByEpoch).toReturnWith(null);
     expect(response.status).toBe(404);
     expect(response.body.status).toBe("fail");
