@@ -567,6 +567,24 @@ describe("updateSignature", () => {
       { epochMs: dateThree, name: "Banana", message: "holla" },
     ]);
   });
+
+  it("returns null when there is no signature to update", () => {
+    // arrange
+    const presentDate = Date.now();
+    const referenceSignatures = [
+      { epochMs: presentDate, name: "Apple" },
+      { epochMs: presentDate + 1, name: "Apple", message: "holla" },
+      { epochMs: presentDate + 2, name: "Banana", message: "holla" },
+    ];
+    setAllSignatures(referenceSignatures);
+
+    // act
+    const result = updateSignature({ name: "Kanye" }, { name: "Kim" });
+
+    // assert: returns null and signatures are unchanged
+    expect(result).toBeNull();
+    expect(getAllSignatures()).toStrictEqual(referenceSignatures);
+  });
 });
 
 describe("updateSignatureByEpoch", () => {
@@ -616,6 +634,24 @@ describe("updateSignatureByEpoch", () => {
 
     // assert: returns updated signature
     expect(result).toStrictEqual({ ...referenceSignatures[2], name: "Carrot" });
+  });
+
+  it("returns null when there is no signature to update", () => {
+    // arrange
+    const presentDate = Date.now();
+    const referenceSignatures = [
+      { epochMs: presentDate, name: "Apple" },
+      { epochMs: presentDate + 1, name: "Apple", message: "holla" },
+      { epochMs: presentDate + 2, name: "Banana", message: "holla" },
+    ];
+    setAllSignatures(referenceSignatures);
+
+    // act
+    const result = updateSignatureByEpoch(presentDate + 3, { name: "Kim" });
+
+    // assert: returns null and signatures are unchanged
+    expect(result).toBeNull();
+    expect(getAllSignatures()).toStrictEqual(referenceSignatures);
   });
 
   it("can add a previously absent key", () => {
