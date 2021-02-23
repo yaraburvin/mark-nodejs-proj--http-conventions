@@ -68,7 +68,7 @@ describe("GET /signatures/:epoch", () => {
   });
 });
 
-describe("DELETE /signatures/", () => {
+describe("POST /signatures/", () => {
   test("when given appropriate signature data, it responds with a status of 201, a status of success and signature in data", async () => {
     const response = await supertest(app).post("/signatures").send({
       name: "Noddy",

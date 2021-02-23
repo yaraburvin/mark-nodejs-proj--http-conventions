@@ -17,4 +17,5 @@
 
 - Read SO post: [https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/](https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/)
 - test endpoint status code
-- t
+- make PUT /signatures/:epoch pass
+- write tests for DELETE /signatures:epoch
