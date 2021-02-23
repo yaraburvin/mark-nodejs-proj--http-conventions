@@ -6,14 +6,16 @@ export interface Signature {
    * Treated like an id, the return value of Date.now() [making the assumption that no more than 1 signature is added in a given millisecond]
    *
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
+   *
+   * Read more about the 'epoch' idea here: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
    */
-  date: number;
+  epochMs: number;
   name: string;
   message?: string;
 }
 
-/** A signature, omitting the 'date' property */
-export type DatelessSignature = Omit<Signature, "date">;
+/** A signature, omitting the 'epochMs' property */
+export type DatelessSignature = Omit<Signature, "epochMs">;
 
 /**
  * All keys set as optional for a Signature
@@ -72,26 +74,26 @@ export function findSignature(
 }
 
 /**
- * Finds the first signature with the matching date.
+ * Finds the first signature with the matching `epochMs`.
  * Returns null if there is no matching signature
- * @param date the Date.now() number id for the date
+ * @param epochMs the Date.now() number id from the signature's date
  */
-export function findSignatureByDate(date: number): Signature | null {
-  return findSignature({ date });
+export function findSignatureByEpoch(epochMs: number): Signature | null {
+  return findSignature({ epochMs });
 }
 
 /**
- * Finds the first signature with the matching date.
+ * Finds the first signature with the matching epochMs.
  * Throws an error if there is no matching signature.
  *
- * @param date the Date.now() number id for the date
+ * @param epochMs the Date.now() number id for the signature
  */
-export function findSignatureByDateOrFail(date: number): Signature {
-  const signature = findSignatureByDate(date);
+export function findSignatureByEpochOrFail(epochMs: number): Signature {
+  const signature = findSignatureByEpoch(epochMs);
   if (signature) {
     return signature;
   } else {
-    throw new Error(`No signature exists with the date ${date}`);
+    throw new Error(`No signature exists with the epochMs ${epochMs}`);
   }
 }
 
@@ -127,7 +129,7 @@ export function getAllSignatures(): SignatureCollection {
 export function insertSignature(signature: DatelessSignature): Signature {
   const signatureToAdd = {
     ...signature,
-    date: Date.now(), // create date as adding it in
+    epochMs: Date.now(), // create date as adding it in
   };
   _signatureCollection.push(signatureToAdd);
   return signatureToAdd;

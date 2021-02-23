@@ -1,8 +1,8 @@
 import {
   getAllSignatures,
-  findSignatureByDate,
+  findSignatureByEpoch,
   setAllSignatures,
-  findSignatureByDateOrFail,
+  findSignatureByEpochOrFail,
   insertSignature,
   findSignature,
   findSignatureOrFail,
@@ -15,8 +15,8 @@ describe("getAllSignatures", () => {
   it("returns all signatures stored", () => {
     // setup
     setAllSignatures([
-      { date: Date.now(), name: "Ada Lovelace" },
-      { date: Date.now() + 1, name: "Alan Turing" },
+      { epochMs: Date.now(), name: "Ada Lovelace" },
+      { epochMs: Date.now() + 1, name: "Alan Turing" },
     ]);
 
     // act
@@ -33,8 +33,8 @@ describe("getAllSignatures", () => {
   it("is resistant to accidental mutation", () => {
     // setup
     const initialSignatures = [
-      { date: Date.now(), name: "Harry Potter" },
-      { date: Date.now() + 1, name: "Ginny Weasley" },
+      { epochMs: Date.now(), name: "Harry Potter" },
+      { epochMs: Date.now() + 1, name: "Ginny Weasley" },
     ];
     setAllSignatures(initialSignatures);
 
@@ -62,23 +62,23 @@ describe("findIndexOfSignature", () => {
       Date.now() + 3,
     ];
     const referenceSignatures = [
-      { date: dateOne, name: "Apple" },
-      { date: dateTwo, name: "Apple", message: "Not my first signature" },
-      { date: dateThree, name: "Carrot" },
-      { date: dateFour, name: "Carrot", message: "Not my first message" },
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Apple", message: "Not my first signature" },
+      { epochMs: dateThree, name: "Carrot" },
+      { epochMs: dateFour, name: "Carrot", message: "Not my first message" },
     ];
     setAllSignatures(referenceSignatures);
 
     // act
     const emptyMatcher = findIndexOfSignature({});
-    const matchOnSecondDate = findIndexOfSignature({ date: dateTwo });
+    const matchOnSecondDate = findIndexOfSignature({ epochMs: dateTwo });
     const matchOnCarrotName = findIndexOfSignature({ name: "Carrot" });
     const matchOnCarrotNameAndMessage = findIndexOfSignature({
       name: "Carrot",
       message: "Not my first message",
     });
     const shouldNotMatch = findIndexOfSignature({
-      date: dateOne,
+      epochMs: dateOne,
       name: "Carrot",
     });
 
@@ -94,7 +94,7 @@ describe("findIndexOfSignature", () => {
   it("returns null if no signature exists with that date", () => {
     // setup
     const presentDate = Date.now();
-    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+    setAllSignatures([{ epochMs: presentDate, name: "Apple" }]);
 
     // act
     const result = findIndexOfSignature({ name: "Carrot" });
@@ -115,22 +115,22 @@ describe("findSignature", () => {
       Date.now() + 3,
     ];
     const referenceSignatures = [
-      { date: dateOne, name: "Apple" },
-      { date: dateTwo, name: "Apple", message: "Not my first signature" },
-      { date: dateThree, name: "Carrot" },
-      { date: dateFour, name: "Carrot", message: "Not my first message" },
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Apple", message: "Not my first signature" },
+      { epochMs: dateThree, name: "Carrot" },
+      { epochMs: dateFour, name: "Carrot", message: "Not my first message" },
     ];
     setAllSignatures(referenceSignatures);
 
     // act
     const emptyMatcher = findSignature({});
-    const matchOnSecondDate = findSignature({ date: dateTwo });
+    const matchOnSecondDate = findSignature({ epochMs: dateTwo });
     const matchOnCarrotName = findSignature({ name: "Carrot" });
     const matchOnCarrotNameAndMessage = findSignature({
       name: "Carrot",
       message: "Not my first message",
     });
-    const shouldNotMatch = findSignature({ date: dateOne, name: "Carrot" });
+    const shouldNotMatch = findSignature({ epochMs: dateOne, name: "Carrot" });
 
     // assert
     // design decision: empty matcher just finds the first one
@@ -144,7 +144,7 @@ describe("findSignature", () => {
   it("returns null if no matching signature exists", () => {
     // setup
     const presentDate = Date.now();
-    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+    setAllSignatures([{ epochMs: presentDate, name: "Apple" }]);
 
     // act
     const result = findSignature({ name: "Carrot" });
@@ -156,21 +156,21 @@ describe("findSignature", () => {
   it("is resistant to accidental mutation", () => {
     // setup
     const presentDate = Date.now();
-    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+    setAllSignatures([{ epochMs: presentDate, name: "Apple" }]);
 
     // act
-    const signature = findSignature({ date: presentDate });
+    const signature = findSignature({ epochMs: presentDate });
     signature!.name = "WAKKA WAKKA";
 
     // assert: still finds a name of Apple
-    expect(findSignature({ date: presentDate })).toHaveProperty(
+    expect(findSignature({ epochMs: presentDate })).toHaveProperty(
       "name",
       "Apple"
     );
   });
 });
 
-describe("findSignatureByDate", () => {
+describe("findSignatureByEpoch", () => {
   it("returns a given signature if it can find it", () => {
     // setup
     const [dateOne, dateTwo, dateThree] = [
@@ -180,15 +180,15 @@ describe("findSignatureByDate", () => {
       Date.now() + 2,
     ];
     setAllSignatures([
-      { date: dateOne, name: "Apple" },
-      { date: dateTwo, name: "Banana" },
-      { date: dateThree, name: "Carrot" },
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Banana" },
+      { epochMs: dateThree, name: "Carrot" },
     ]);
 
     // act
-    const sigOne = findSignatureByDate(dateOne);
-    const sigTwo = findSignatureByDate(dateTwo);
-    const sigThree = findSignatureByDate(dateThree);
+    const sigOne = findSignatureByEpoch(dateOne);
+    const sigTwo = findSignatureByEpoch(dateTwo);
+    const sigThree = findSignatureByEpoch(dateThree);
 
     // assert
     expect(sigOne).toHaveProperty("name", "Apple");
@@ -199,10 +199,10 @@ describe("findSignatureByDate", () => {
   it("returns null if no signature exists with that date", () => {
     // setup
     const presentDate = Date.now();
-    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+    setAllSignatures([{ epochMs: presentDate, name: "Apple" }]);
 
     // act
-    const result = findSignatureByDate(presentDate - 1000);
+    const result = findSignatureByEpoch(presentDate - 1000);
 
     // assert
     expect(result).toBeNull();
@@ -211,18 +211,18 @@ describe("findSignatureByDate", () => {
   it("is resistant to accidental mutation", () => {
     // setup
     const presentDate = Date.now();
-    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+    setAllSignatures([{ epochMs: presentDate, name: "Apple" }]);
 
     // act
-    const signature = findSignatureByDate(presentDate);
+    const signature = findSignatureByEpoch(presentDate);
     signature!.name = "WAKKA WAKKA";
 
     // assert: still finds a name of Apple
-    expect(findSignatureByDate(presentDate)).toHaveProperty("name", "Apple");
+    expect(findSignatureByEpoch(presentDate)).toHaveProperty("name", "Apple");
   });
 });
 
-describe("findSignatureByDateOrFail", () => {
+describe("findSignatureByEpochOrFail", () => {
   it("returns a given signature if it can find it", () => {
     // setup
     const [dateOne, dateTwo, dateThree] = [
@@ -232,15 +232,15 @@ describe("findSignatureByDateOrFail", () => {
       Date.now() + 2,
     ];
     setAllSignatures([
-      { date: dateOne, name: "Apple" },
-      { date: dateTwo, name: "Banana" },
-      { date: dateThree, name: "Carrot" },
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Banana" },
+      { epochMs: dateThree, name: "Carrot" },
     ]);
 
     // act
-    const sigOne = findSignatureByDateOrFail(dateOne);
-    const sigTwo = findSignatureByDateOrFail(dateTwo);
-    const sigThree = findSignatureByDateOrFail(dateThree);
+    const sigOne = findSignatureByEpochOrFail(dateOne);
+    const sigTwo = findSignatureByEpochOrFail(dateTwo);
+    const sigThree = findSignatureByEpochOrFail(dateThree);
 
     // assert
     expect(sigOne).toHaveProperty("name", "Apple");
@@ -251,25 +251,25 @@ describe("findSignatureByDateOrFail", () => {
   it("throws an error no signature exists with that date", () => {
     // setup
     const presentDate = Date.now();
-    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+    setAllSignatures([{ epochMs: presentDate, name: "Apple" }]);
 
     // assert
     expect(() => {
-      findSignatureByDateOrFail(presentDate - 1000);
+      findSignatureByEpochOrFail(presentDate - 1000);
     }).toThrowError();
   });
 
   it("is resistant to accidental mutation", () => {
     // setup
     const presentDate = Date.now();
-    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+    setAllSignatures([{ epochMs: presentDate, name: "Apple" }]);
 
     // act
-    const signature = findSignatureByDateOrFail(presentDate);
+    const signature = findSignatureByEpochOrFail(presentDate);
     signature!.name = "WAKKA WAKKA";
 
     // assert: still finds a name of Apple
-    expect(findSignatureByDateOrFail(presentDate)).toHaveProperty(
+    expect(findSignatureByEpochOrFail(presentDate)).toHaveProperty(
       "name",
       "Apple"
     );
@@ -286,9 +286,9 @@ describe("findSignatureOrFail", () => {
       Date.now() + 2,
     ];
     const referenceSignatures = [
-      { date: dateOne, name: "Apple" },
-      { date: dateTwo, name: "Banana", message: "holla" },
-      { date: dateThree, name: "Carrot", message: "holla" },
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Banana", message: "holla" },
+      { epochMs: dateThree, name: "Carrot", message: "holla" },
     ];
     setAllSignatures(referenceSignatures);
 
@@ -306,7 +306,7 @@ describe("findSignatureOrFail", () => {
   it("throws an error no signature exists with that date", () => {
     // setup
     const presentDate = Date.now();
-    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+    setAllSignatures([{ epochMs: presentDate, name: "Apple" }]);
 
     // assert
     expect(() => {
@@ -317,14 +317,14 @@ describe("findSignatureOrFail", () => {
   it("is resistant to accidental mutation", () => {
     // setup
     const presentDate = Date.now();
-    setAllSignatures([{ date: presentDate, name: "Apple" }]);
+    setAllSignatures([{ epochMs: presentDate, name: "Apple" }]);
 
     // act
-    const signature = findSignatureOrFail({ date: presentDate });
+    const signature = findSignatureOrFail({ epochMs: presentDate });
     signature!.name = "WAKKA WAKKA";
 
     // assert: still finds a name of Apple
-    expect(findSignatureOrFail({ date: presentDate })).toHaveProperty(
+    expect(findSignatureOrFail({ epochMs: presentDate })).toHaveProperty(
       "name",
       "Apple"
     );
@@ -336,7 +336,7 @@ describe("insertSignature", () => {
     // setup
     setAllSignatures([
       // use date in past to ensure uniqueness
-      { date: Date.now() - 1, name: "Horrid Henry" },
+      { epochMs: Date.now() - 1, name: "Horrid Henry" },
     ]);
 
     // act
@@ -348,8 +348,8 @@ describe("insertSignature", () => {
     expect(signatures).toHaveLength(2);
     expect(signatures[1]).toMatchObject(signatureToInsert);
     expect(signatures[1]).toMatchObject(insertedSignature);
-    // has added a date number
-    expect(typeof insertedSignature.date).toBe("number");
+    // has added an epochMs number
+    expect(typeof insertedSignature.epochMs).toBe("number");
     // has not added it onto the original object
     expect(signatureToInsert).not.toHaveProperty("date");
   });
@@ -359,8 +359,8 @@ describe("removeSignature", () => {
   test("when there is a matching signature, it remove it and returns true", () => {
     // setup
     setAllSignatures([
-      { date: Date.now(), name: "Ada Lovelace" },
-      { date: Date.now() + 1, name: "Alan Turing" },
+      { epochMs: Date.now(), name: "Ada Lovelace" },
+      { epochMs: Date.now() + 1, name: "Alan Turing" },
     ]);
 
     // act
@@ -376,8 +376,8 @@ describe("removeSignature", () => {
   test("when there no matching signature, it returns false", () => {
     // setup
     setAllSignatures([
-      { date: Date.now(), name: "Ada Lovelace" },
-      { date: Date.now() + 1, name: "Alan Turing" },
+      { epochMs: Date.now(), name: "Ada Lovelace" },
+      { epochMs: Date.now() + 1, name: "Alan Turing" },
     ]);
 
     // act
@@ -398,8 +398,8 @@ describe("setAllSignatures", () => {
   it("reassigns the signatures to the array passed in", () => {
     // act
     setAllSignatures([
-      { date: Date.now(), name: "Lisa Simpson" },
-      { date: Date.now() + 1, name: "Bart Simpson" },
+      { epochMs: Date.now(), name: "Lisa Simpson" },
+      { epochMs: Date.now() + 1, name: "Bart Simpson" },
     ]);
 
     // assert
@@ -422,9 +422,9 @@ describe("updateSignature", () => {
       Date.now() + 2,
     ];
     const referenceSignatures = [
-      { date: dateOne, name: "Apple" },
-      { date: dateTwo, name: "Apple", message: "holla" },
-      { date: dateThree, name: "Banana", message: "holla" },
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Apple", message: "holla" },
+      { epochMs: dateThree, name: "Banana", message: "holla" },
     ];
     setAllSignatures(referenceSignatures);
 
@@ -438,37 +438,39 @@ describe("updateSignature", () => {
     const signatures = getAllSignatures();
     expect(signatures).toHaveLength(3);
     expect(signatures).toStrictEqual([
-      { date: dateOne, name: "Apple" },
-      { date: dateTwo, name: "Apple", message: "message one!" },
-      { date: dateThree, name: "Banana", message: "message two!" },
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Apple", message: "message one!" },
+      { epochMs: dateThree, name: "Banana", message: "message two!" },
     ]);
   });
 
   it("Can update keys different to those matched against", () => {
     // setup
     const presentDate = Date.now();
-    const referenceSignatures = [{ date: presentDate, name: "Apple" }];
+    const referenceSignatures = [{ epochMs: presentDate, name: "Apple" }];
     setAllSignatures(referenceSignatures);
 
-    updateSignature({ date: presentDate }, { name: "Banana" });
+    updateSignature({ epochMs: presentDate }, { name: "Banana" });
 
     // assert
     const signatures = getAllSignatures();
-    expect(signatures).toStrictEqual([{ date: presentDate, name: "Banana" }]);
+    expect(signatures).toStrictEqual([
+      { epochMs: presentDate, name: "Banana" },
+    ]);
   });
 
   it("Can add a previously absent key", () => {
     // setup
     const presentDate = Date.now();
-    const referenceSignatures = [{ date: presentDate, name: "Apple" }];
+    const referenceSignatures = [{ epochMs: presentDate, name: "Apple" }];
     setAllSignatures(referenceSignatures);
 
-    updateSignature({ date: presentDate }, { message: "hi!" });
+    updateSignature({ epochMs: presentDate }, { message: "hi!" });
 
     // assert
     const signatures = getAllSignatures();
     expect(signatures).toStrictEqual([
-      { date: presentDate, name: "Apple", message: "hi!" },
+      { epochMs: presentDate, name: "Apple", message: "hi!" },
     ]);
   });
 
@@ -481,9 +483,9 @@ describe("updateSignature", () => {
       Date.now() + 2,
     ];
     const referenceSignatures = [
-      { date: dateOne, name: "Apple" },
-      { date: dateTwo, name: "Apple", message: "holla" },
-      { date: dateThree, name: "Banana", message: "holla" },
+      { epochMs: dateOne, name: "Apple" },
+      { epochMs: dateTwo, name: "Apple", message: "holla" },
+      { epochMs: dateThree, name: "Banana", message: "holla" },
     ];
     setAllSignatures(referenceSignatures);
 
@@ -497,9 +499,9 @@ describe("updateSignature", () => {
     const signatures = getAllSignatures();
     expect(signatures).toHaveLength(3);
     expect(signatures).toStrictEqual([
-      { date: dateOne, name: "Carrot" },
-      { date: dateTwo, name: "Carrot", message: "holla" },
-      { date: dateThree, name: "Banana", message: "holla" },
+      { epochMs: dateOne, name: "Carrot" },
+      { epochMs: dateTwo, name: "Carrot", message: "holla" },
+      { epochMs: dateThree, name: "Banana", message: "holla" },
     ]);
   });
 });
