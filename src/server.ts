@@ -1,12 +1,12 @@
 import express from "express";
 import cors from "cors";
+import { findSignatureByEpoch } from "./signature/model";
 
 const app = express();
 
 /**
  * Simplest way to connect a front-end. Unimportant detail right now, although you can read more: https://flaviocopes.com/express-cors/
- */ import { findSignatureByEpoch } from "./signature/model";
-
+ */
 app.use(cors());
 
 /**
@@ -25,10 +25,12 @@ app.get("/signatures", (req, res) => {
 
 app.post("/signatures", (req, res) => {
   if (typeof req.body.name === "string") {
+    // TODO: create the signature in the db
+
     res.status(201).send({
       status: "success",
       data: {
-        signature: {}, // TODO: populate with data
+        signature: {}, // TODO: populate with the created signature
       },
     });
   } else {

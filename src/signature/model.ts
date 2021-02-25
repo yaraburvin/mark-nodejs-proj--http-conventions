@@ -136,10 +136,11 @@ export function insertSignature(signature: DatelessSignature): Signature {
 }
 
 /**
- * Finds the first signature with the matching data.
- * Returns null if there is no matching signature.
+ * Tries to remove the first matching signature based on the passed
+ *  in signature matcher.
  *
  * @param signatureMatcher the properties to match against
+ * @returns `true` if a signature was removed, and `false` otherwise
  */
 export function removeSignature(signatureMatcher: PartialSignature): boolean {
   const matchingIndex = findIndexOfSignature(signatureMatcher);
@@ -151,6 +152,13 @@ export function removeSignature(signatureMatcher: PartialSignature): boolean {
   return true;
 }
 
+/**
+ * Tries to remove a signature with the given epochMs identifier
+ *  from the signature collection.
+ *
+ * @param epochMs the Date.now() number id for the signature
+ * @returns `true` if a signature was removed, and `false` otherwise
+ */
 export function removeSignatureByEpoch(epochMs: number): boolean {
   return removeSignature({ epochMs });
 }
