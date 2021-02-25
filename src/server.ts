@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import {
   findSignatureByEpoch,
+  insertSignature,
   removeSignatureByEpoch,
 } from "./signature/model";
 
@@ -27,20 +28,25 @@ app.get("/signatures", (req, res) => {
 });
 
 app.post("/signatures", (req, res) => {
-  if (typeof req.body.name === "string") {
-    // TODO: create the signature in the db
+  const { name, message } = req.body;
+  if (typeof name === "string") {
+    const createdSignature = insertSignature({
+      name: name,
+      // only include message if it is a string
+      message: typeof message === "string" ? message : undefined,
+    });
 
     res.status(201).send({
       status: "success",
       data: {
-        signature: {}, // TODO: populate with the created signature
+        signature: createdSignature,
       },
     });
   } else {
     res.status(400).send({
       status: "fail",
       data: {
-        name: "A name is required",
+        name: "A string value for name is required",
       },
     });
   }

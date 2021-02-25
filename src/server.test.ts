@@ -1,7 +1,9 @@
 import supertest from "supertest";
 import app from "./server";
 import {
+  DatelessSignature,
   findSignatureByEpoch,
+  insertSignature,
   Signature,
   updateSignatureByEpoch,
 } from "./signature/model";
@@ -139,6 +141,22 @@ describe.skip("PATCH /signatures/:epoch", () => {
 });
 
 describe("POST /signatures", () => {
+  beforeEach(() => {
+    // type guard so we can use the mock API inside
+    if (jest.isMockFunction(insertSignature)) {
+      // Reset the mock call and return history before each test
+      insertSignature.mockReset();
+
+      // mock behaviour for tests
+      insertSignature.mockImplementation(
+        (signature: DatelessSignature): Signature => ({
+          ...signature,
+          epochMs: Date.now(),
+        })
+      );
+    }
+  });
+
   test("when given appropriate signature data, it responds with a status of 201, a status of success and signature in data", async () => {
     const response = await supertest(app).post("/signatures").send({
       name: "Noddy",
@@ -155,7 +173,7 @@ describe("POST /signatures", () => {
     expect(response.status).toBe(400);
     expect(response.body.status).toBe("fail");
     expect(response.body.data).toMatchObject({
-      name: "A name is required",
+      name: "A string value for name is required",
     });
   });
 });
