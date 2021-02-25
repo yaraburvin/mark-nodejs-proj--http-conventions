@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
-import { findSignatureByEpoch } from "./signature/model";
+import {
+  findSignatureByEpoch,
+  removeSignatureByEpoch,
+} from "./signature/model";
 
 const app = express();
 
@@ -54,6 +57,23 @@ app.get("/signatures/:epoch", (req, res) => {
       data: {
         signature,
       },
+    });
+  } else {
+    res.status(404).send({
+      status: "fail",
+      data: {
+        epochMs: "Could not find a signature with that epoch identifier",
+      },
+    });
+  }
+});
+
+app.delete("/signatures/:epoch", (req, res) => {
+  const epochMs = parseInt(req.params.epoch); // params are string type
+  const didRemove = removeSignatureByEpoch(epochMs);
+  if (didRemove) {
+    res.status(200).send({
+      status: "success",
     });
   } else {
     res.status(404).send({
