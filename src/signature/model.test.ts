@@ -350,6 +350,7 @@ describe("insertSignature", () => {
     expect(signatures).toHaveLength(2);
     expect(signatures[1]).toMatchObject(signatureToInsert);
     expect(signatures[1]).toMatchObject(insertedSignature);
+    expect(insertedSignature).toMatchObject(signatureToInsert);
     // has added an epochMs number
     expect(typeof insertedSignature.epochMs).toBe("number");
     // has not added it onto the original object
