@@ -157,6 +157,17 @@ describe("POST /signatures", () => {
     }
   });
 
+  it("calls insertSignature with the string name and message passed in the body", async () => {
+    await supertest(app).post("/signatures").send({
+      name: "Noddy",
+      message: "Hi, I'm Noddy!",
+    });
+    expect(insertSignature).toHaveBeenCalledWith({
+      name: "Noddy",
+      message: "Hi, I'm Noddy!",
+    });
+  });
+
   test("when given appropriate signature data, it responds with a status of 201, a status of success and signature in data", async () => {
     const response = await supertest(app).post("/signatures").send({
       name: "Noddy",
