@@ -220,6 +220,22 @@ Now, repeat this to show that you can add 2-3 (different) signatures which are a
 Look at the code implemented in the route handlers for GET `/signatures` and POST `/signatures` to see if you can make sense of the above behaviour which we can see.
 
 
+## Exercise 2: Route parameters, and making your first DELETE request
+
+### Reading a specific signature using a route parameter
+
+In `server.ts`, we have a GET route handler for the route `/signatures/:epoch`. This is using a route parameter (with documentation linked to in the comments).
+
+Let's try this out. Make a GET request to `/signatures` and pick one of the `epochId`s which you see - for example, I might pick `1614605810324` for Cicely Popplewell. 
+
+Then, create a new tab, and make a GET request of the structure `/signatures/1614605810324` (substituting in your chosen `epochId`).
+
+You should see that the matching signature comes back!
+
+Experiment with changing it to other `epochId`s - including ones which aren't present in your array of signatures.
+
+Then, return to the GET route handlers for `/signatures/:epoch`. How does this code relate to the behaviour you've observed?
+
 
 
 ## Tasks
