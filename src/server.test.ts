@@ -1,4 +1,3 @@
-import { update } from "lodash";
 import supertest from "supertest";
 import app from "./server";
 import {
@@ -15,12 +14,18 @@ import { resetMockFor } from "./test-utils";
 jest.mock("./signature/model");
 
 describe("GET /signatures", () => {
+  const mockResponseData: Signature[] = [
+    { epochMs: Date.now(), name: "Lucy Liu" },
+    { epochMs: Date.now() + 1, name: "Jackie Chan" },
+  ];
 
   beforeEach(() => {
-    resetMockFor(getAllSignatures, (): Signature[] => [
-      { epochMs: Date.now(), name: "Lucy Liu" },
-      { epochMs: Date.now() + 1, name: "Jackie Chan" },
-    ]);
+    resetMockFor(getAllSignatures, (): Signature[] => [...mockResponseData]);
+  });
+
+  it("calls getAllSignatures", async () => {
+    await supertest(app).get("/signatures");
+    expect(getAllSignatures).toHaveBeenCalledTimes(1);
   });
 
   it("responds with a status of 200, a status of success and signatures array in data", async () => {
@@ -28,7 +33,7 @@ describe("GET /signatures", () => {
     expect(response.status).toBe(200);
     expect(response.body.status).toBe("success");
     expect(response.body.data).toHaveProperty("signatures");
-    expect(Array.isArray(response.body.data.signatures)).toBe(true);
+    expect(response.body.data.signatures).toStrictEqual(mockResponseData);
   });
 });
 
@@ -41,6 +46,7 @@ describe("GET /signatures/:epoch", () => {
 
   beforeEach(() => {
     resetMockFor(findSignatureByEpoch, (epochMs: number): Signature | null => {
+      // mock implementation:
       // return a signature for a specific epochMs, otherwise null
       return epochMs === PASSING_SIGNATURE.epochMs ? PASSING_SIGNATURE : null;
     });
@@ -92,6 +98,7 @@ describe.skip("PATCH /signatures/:epoch", () => {
         epochMs: number,
         updateProperties: Partial<Signature>
       ): Signature | null => {
+        // mock implementation:
         // simulate updating a signature for a specific epochMs
         // otherwise return null
         return epochMs === PASSING_SIGNATURE.epochMs
@@ -138,6 +145,8 @@ describe("POST /signatures", () => {
   beforeEach(() => {
     resetMockFor(
       insertSignature,
+      // mock implementation:
+      // just return the signature with a new epochMs property
       (signature: DatelessSignature): Signature => ({
         ...signature,
         epochMs: Date.now(),

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import {
   findSignatureByEpoch,
+  getAllSignatures,
   insertSignature,
   removeSignatureByEpoch,
 } from "./signature/model";
@@ -19,10 +20,11 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/signatures", (req, res) => {
+  const signatures = getAllSignatures()
   res.status(200).json({
     status: "success",
     data: {
-      signatures: [], // TODO: populate from 'database'
+      signatures
     },
   });
 });
