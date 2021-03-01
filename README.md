@@ -143,6 +143,8 @@ However, writing our server by following conventions will make it much easier fo
 
 ## Exercise 1: Focused code reading, and making your first POST request with data
 
+> 🎯 **Success criterion:** you are able to **C**reate new signatures on your server and **R**ead back all signatures
+
 As a software engineer, you will be working on codebases which are large, have been written by other people and where most of it may be code that you never touch - you work on a relatively small surface area of it.
 
 This project is a mini exposure to the same idea. Explicitly: we don't expect that you'll have to work on any of the code in the `signature` directory (you may have to _use_ a couple of the functions within, but you needn't understand all of it). If you would like, you can treat it entirely as a black box. (You're welcome to poke around in it if you want to look, but you're not required to and it's not important for the main learning outcomes of this exercise.)
@@ -222,6 +224,8 @@ Look at the code implemented in the route handlers for GET `/signatures` and POS
 
 ## Exercise 2: Route parameters, and making your first DELETE request
 
+> 🎯 **Success criterion:** you are able to **R**ead and **D**elete specific signatures from the server via Postman
+
 ### Reading a specific signature using a route parameter
 
 In `server.ts`, we have a GET route handler for the route `/signatures/:epoch`. This is using a route parameter (with documentation linked to in the comments).
@@ -236,6 +240,11 @@ Experiment with changing it to other `epochId`s - including ones which aren't pr
 
 Then, return to the GET route handlers for `/signatures/:epoch`. How does this code relate to the behaviour you've observed?
 
+### Making a DELETE request
+
+See if you can figure out from the above how to now _delete_ specific signatures.
+
+It's very similar...
 
 
 ## Tasks
