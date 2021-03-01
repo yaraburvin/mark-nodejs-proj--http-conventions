@@ -3,19 +3,20 @@ import { isObjectSubset } from "./utils";
 
 export interface Signature {
   /**
-   * Treated like an id, the return value of Date.now() [making the assumption that no more than 1 signature is added in a given millisecond]
+   * `epochId` is treated like an id, the return value of Date.now() [making the assumption that no more than 1 signature is added in a given millisecond]
    *
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
    *
    * Read more about the 'epoch' idea here: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
    */
-  epochMs: number;
+  epochId: number;
+
   name: string;
   message?: string;
 }
 
-/** A signature, omitting the 'epochMs' property */
-export type DatelessSignature = Omit<Signature, "epochMs">;
+/** A signature, omitting the 'epochId' property */
+export type DatelessSignature = Omit<Signature, "epochId">;
 
 /**
  * All keys set as optional for a Signature
@@ -74,26 +75,26 @@ export function findSignature(
 }
 
 /**
- * Finds the first signature with the matching `epochMs`.
+ * Finds the first signature with the matching `epochId`.
  * Returns null if there is no matching signature
- * @param epochMs the Date.now() number id from the signature's date
+ * @param epochId the Date.now() number id from the signature's date
  */
-export function findSignatureByEpoch(epochMs: number): Signature | null {
-  return findSignature({ epochMs });
+export function findSignatureByEpoch(epochId: number): Signature | null {
+  return findSignature({ epochId });
 }
 
 /**
- * Finds the first signature with the matching epochMs.
+ * Finds the first signature with the matching epochId.
  * Throws an error if there is no matching signature.
  *
- * @param epochMs the Date.now() number id for the signature
+ * @param epochId the Date.now() number id for the signature
  */
-export function findSignatureByEpochOrFail(epochMs: number): Signature {
-  const signature = findSignatureByEpoch(epochMs);
+export function findSignatureByEpochOrFail(epochId: number): Signature {
+  const signature = findSignatureByEpoch(epochId);
   if (signature) {
     return signature;
   } else {
-    throw new Error(`No signature exists with the epochMs ${epochMs}`);
+    throw new Error(`No signature exists with the epochId ${epochId}`);
   }
 }
 
@@ -129,7 +130,7 @@ export function getAllSignatures(): SignatureCollection {
 export function insertSignature(signature: DatelessSignature): Signature {
   const signatureToAdd = {
     ...signature,
-    epochMs: Date.now(), // create date as adding it in
+    epochId: Date.now(), // create date as adding it in
   };
   _signatureCollection.push(signatureToAdd);
   return signatureToAdd;
@@ -153,14 +154,14 @@ export function removeSignature(signatureMatcher: PartialSignature): boolean {
 }
 
 /**
- * Tries to remove a signature with the given epochMs identifier
+ * Tries to remove a signature with the given epochId identifier
  *  from the signature collection.
  *
- * @param epochMs the Date.now() number id for the signature
+ * @param epochId the Date.now() number id for the signature
  * @returns `true` if a signature was removed, and `false` otherwise
  */
-export function removeSignatureByEpoch(epochMs: number): boolean {
-  return removeSignature({ epochMs });
+export function removeSignatureByEpoch(epochId: number): boolean {
+  return removeSignature({ epochId });
 }
 
 export function setAllSignatures(signatures: SignatureCollection): void {
@@ -192,8 +193,8 @@ export function updateSignature(
 }
 
 export function updateSignatureByEpoch(
-  epochMs: number,
+  epochId: number,
   updateProperties: PartialSignature
 ): Signature | null {
-  return updateSignature({ epochMs }, updateProperties);
+  return updateSignature({ epochId }, updateProperties);
 }

@@ -48,7 +48,7 @@ app.post("/signatures", (req, res) => {
     res.status(400).json({
       status: "fail",
       data: {
-        name: "A string value for name is required",
+        name: "A string value for name is required in your JSON body",
       },
     });
   }
@@ -57,8 +57,8 @@ app.post("/signatures", (req, res) => {
 app.get("/signatures/:epoch", (req, res) => {
   // :epoch is a route parameter
   //  see documentation: https://expressjs.com/en/guide/routing.html
-  const epochMs = parseInt(req.params.epoch); // params are string type
-  const signature = findSignatureByEpoch(epochMs);
+  const epochId = parseInt(req.params.epoch); // params are string type
+  const signature = findSignatureByEpoch(epochId);
   if (signature) {
     res.status(200).json({
       status: "success",
@@ -70,15 +70,15 @@ app.get("/signatures/:epoch", (req, res) => {
     res.status(404).json({
       status: "fail",
       data: {
-        epochMs: "Could not find a signature with that epoch identifier",
+        epochId: "Could not find a signature with that epoch identifier",
       },
     });
   }
 });
 
 app.delete("/signatures/:epoch", (req, res) => {
-  const epochMs = parseInt(req.params.epoch); // params are string type
-  const didRemove = removeSignatureByEpoch(epochMs);
+  const epochId = parseInt(req.params.epoch); // params are string type
+  const didRemove = removeSignatureByEpoch(epochId);
   if (didRemove) {
     res.status(200).json({
       status: "success",
@@ -87,7 +87,7 @@ app.delete("/signatures/:epoch", (req, res) => {
     res.status(404).json({
       status: "fail",
       data: {
-        epochMs: "Could not find a signature with that epoch identifier",
+        epochId: "Could not find a signature with that epoch identifier",
       },
     });
   }

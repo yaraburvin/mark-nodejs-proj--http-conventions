@@ -15,8 +15,8 @@ jest.mock("./signature/model");
 
 describe("GET /signatures", () => {
   const mockResponseData: Signature[] = [
-    { epochMs: Date.now(), name: "Lucy Liu" },
-    { epochMs: Date.now() + 1, name: "Jackie Chan" },
+    { epochId: Date.now(), name: "Lucy Liu" },
+    { epochId: Date.now() + 1, name: "Jackie Chan" },
   ];
 
   beforeEach(() => {
@@ -40,15 +40,15 @@ describe("GET /signatures", () => {
 describe("GET /signatures/:epoch", () => {
   const PASSING_EPOCH = 1614096121305;
   const PASSING_SIGNATURE = {
-    epochMs: PASSING_EPOCH,
+    epochId: PASSING_EPOCH,
     name: "Indiana Jones",
   };
 
   beforeEach(() => {
-    resetMockFor(findSignatureByEpoch, (epochMs: number): Signature | null => {
+    resetMockFor(findSignatureByEpoch, (epochId: number): Signature | null => {
       // mock implementation:
-      // return a signature for a specific epochMs, otherwise null
-      return epochMs === PASSING_SIGNATURE.epochMs ? PASSING_SIGNATURE : null;
+      // return a signature for a specific epochId, otherwise null
+      return epochId === PASSING_SIGNATURE.epochId ? PASSING_SIGNATURE : null;
     });
   });
 
@@ -59,7 +59,7 @@ describe("GET /signatures/:epoch", () => {
 
   test("when findSignatureByEpoch returns a signature, it returns a 200 with the given epoch", async () => {
     const response = await supertest(app).get(
-      `/signatures/${PASSING_SIGNATURE.epochMs}`
+      `/signatures/${PASSING_SIGNATURE.epochId}`
     );
     expect(findSignatureByEpoch).toReturnWith(PASSING_SIGNATURE);
     expect(response.status).toBe(200);
@@ -68,22 +68,22 @@ describe("GET /signatures/:epoch", () => {
   });
 
   test("when findSignatureByEpoch returns null, it returns a 404 with information about not managing to find a signature", async () => {
-    // add one to get a non-passing epochMs value
+    // add one to get a non-passing epochId value
     const response = await supertest(app).get(
-      `/signatures/${PASSING_SIGNATURE.epochMs + 1}`
+      `/signatures/${PASSING_SIGNATURE.epochId + 1}`
     );
     expect(findSignatureByEpoch).toReturnWith(null);
     expect(response.status).toBe(404);
     expect(response.body.status).toBe("fail");
-    expect(response.body.data).toHaveProperty("epochMs");
-    expect(response.body.data.epochMs).toMatch(/could not find/i);
+    expect(response.body.data).toHaveProperty("epochId");
+    expect(response.body.data.epochId).toMatch(/could not find/i);
   });
 });
 
-describe.skip("PATCH /signatures/:epoch", () => {
+describe.skip("PUT /signatures/:epoch", () => {
   const PASSING_EPOCH = 1614096121305;
   const PASSING_SIGNATURE = {
-    epochMs: PASSING_EPOCH,
+    epochId: PASSING_EPOCH,
     name: "Indiana Jones",
   };
   const UPDATE_PROPERTIES = {
@@ -95,13 +95,13 @@ describe.skip("PATCH /signatures/:epoch", () => {
     resetMockFor(
       updateSignatureByEpoch,
       (
-        epochMs: number,
+        epochId: number,
         updateProperties: Partial<Signature>
       ): Signature | null => {
         // mock implementation:
-        // simulate updating a signature for a specific epochMs
+        // simulate updating a signature for a specific epochId
         // otherwise return null
-        return epochMs === PASSING_SIGNATURE.epochMs
+        return epochId === PASSING_SIGNATURE.epochId
           ? { ...PASSING_SIGNATURE, ...updateProperties }
           : null;
       }
@@ -110,14 +110,14 @@ describe.skip("PATCH /signatures/:epoch", () => {
 
   it("calls findSignatureByEpoch with the given epoch", async () => {
     await supertest(app)
-      .patch("/signatures/1614095562950")
+      .put("/signatures/1614095562950")
       .send(UPDATE_PROPERTIES);
     expect(findSignatureByEpoch).toHaveBeenCalledWith(1614095562950);
   });
 
   test("when updateSignatureByEpoch returns a signature, it returns a 200 with the given epoch", async () => {
     const response = await supertest(app)
-      .patch(`/signatures/${PASSING_SIGNATURE.epochMs}`)
+      .put(`/signatures/${PASSING_SIGNATURE.epochId}`)
       .send(UPDATE_PROPERTIES);
     expect(findSignatureByEpoch).toReturnWith({
       ...PASSING_SIGNATURE,
@@ -129,15 +129,15 @@ describe.skip("PATCH /signatures/:epoch", () => {
   });
 
   test("when updateSignatureByEpoch returns null, it returns a 404 with information about not managing to find a signature", async () => {
-    // add one to patch a non-passing epochMs value
+    // add one to patch a non-passing epochId value
     const response = await supertest(app)
-      .patch(`/signatures/${PASSING_SIGNATURE.epochMs + 1}`)
+      .put(`/signatures/${PASSING_SIGNATURE.epochId + 1}`)
       .send(UPDATE_PROPERTIES);
     expect(findSignatureByEpoch).toReturnWith(null);
     expect(response.status).toBe(404);
     expect(response.body.status).toBe("fail");
-    expect(response.body.data).toHaveProperty("epochMs");
-    expect(response.body.data.epochMs).toMatch(/could not find/i);
+    expect(response.body.data).toHaveProperty("epochId");
+    expect(response.body.data.epochId).toMatch(/could not find/i);
   });
 });
 
@@ -146,10 +146,10 @@ describe("POST /signatures", () => {
     resetMockFor(
       insertSignature,
       // mock implementation:
-      // just return the signature with a new epochMs property
+      // just return the signature with a new epochId property
       (signature: DatelessSignature): Signature => ({
         ...signature,
-        epochMs: Date.now(),
+        epochId: Date.now(),
       })
     );
   });
@@ -180,8 +180,7 @@ describe("POST /signatures", () => {
     });
     expect(response.status).toBe(400);
     expect(response.body.status).toBe("fail");
-    expect(response.body.data).toMatchObject({
-      name: "A string value for name is required",
-    });
+    expect(response.body.data.name).toMatch(/string value/);
+    expect(response.body.data.name).toMatch(/required/);
   });
 });
