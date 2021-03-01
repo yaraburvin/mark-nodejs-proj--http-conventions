@@ -246,6 +246,36 @@ See if you can figure out from the above how to now _delete_ specific signatures
 
 It's very similar...
 
+## Exercise 3: Reading the tests
+
+> 🎯 **Success criterion:** you are able to explain how we unit test our server response
+
+We're now going to look at the `server.test.ts` file and see how we're testing the above behaviour in some way.
+
+### A note on mocking
+
+Think back to the unit tests in Digipet - we saw that we separated out our controller unit tests and our server unit tests such that it was possible for one to fail without the other failing.
+
+We achieved this through the use of mocks, which let us test whether a (mocked version of a) function gets called, without tying us into the specific behaviour of a function.
+
+In `server.test.ts`, you'll see some code that looks like this under the tests for `GET /signatures` (and similar code in other `describe` blocks):
+
+```ts
+beforeEach(() => {
+  resetMockFor(getAllSignatures, () => [...mockResponseData]);
+});
+```
+
+This is using:
+1. A Jest-provided utility, `beforeEach`, which is [used for some test setup](https://jestjs.io/docs/en/setup-teardown); and
+2. A custom test utility, `resetMockFor` (written in `test-utils.ts`)
+
+The exact implementation and details is not important - if you want, you can ignore all `beforeEach` blocks - but the picture here is that we tell Jest that:
+1. In our test for `GET /signatures`, we want to provide a mock for `getAllSignatures` - making this a nicely isolated server unit test that isn't dependent on the _actual_ implementation of `getAllSignatures`
+2. What's more, where Jest sees any calls to `getAllSignatures`, it should fill in the behaviour using the anonymous callback function `() => [...mockResponseData]`
+
+This lets us, e.g., test that the server response to `GET /signatures` includes the result of `getAllSignatures` - but swapping in a mocked and simplified version of `getAllSignatures` to use in place of the real function. It lets us test how the endpoint handler _uses_ `getAllSignatures` without worrying about the exact details of how it's implemented in reality.
+
 
 ## Tasks
 
