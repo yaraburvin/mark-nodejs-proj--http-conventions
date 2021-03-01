@@ -284,9 +284,34 @@ You don't need to worry about the exact specifics of what's being mocked as much
 
 Now, try having a look at the test code and making sense of it.
 
+(The tests for PUT are being skipped right now - we'll be writing a handler for that soon.)
+
 In particular, look for the following:
 - How are status codes being tested?
 - How is sending data in a JSON body being simulated and tested?
+
+
+## Exercise 4: Testing `DELETE /signature/:epoch`
+
+> 🎯 **Success criterion:** you have a test written for DELETE requests made to `/signature/:epoch`
+
+Write a test for the DELETE `/signature/:epoch` route handler.
+
+It will look very similar to some other tests (although it's up to you to figure out how!).
+
+Once you've written it, so that it passes, you should also **check that it is possible for the tests to fail** by deliberately modifying the server code in a way which should make the tests fail. (Tests that pass no matter what aren't helpful - we want tests which tell us when we're doing something wrong.)
+
+
+## Exercise 5: Writing `PUT /signature/:epoch`
+
+> 🎯 **Success criterion:** you have a route handler written for PUT requests made to `/signature/:epoch` that passes the tests
+
+Now, unskip the `describe` block for the tests for PUT `/signature/:epoch` - you'll find that they fail when you run the tests.
+
+It's up to you to write the route handler to make the tests pass!
+
+
+
 
 
 ## Tasks
