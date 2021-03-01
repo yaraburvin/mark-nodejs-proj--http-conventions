@@ -80,6 +80,10 @@ app.delete("/signatures/:epoch", (req, res) => {
   const epochId = parseInt(req.params.epoch); // params are string type
   const didRemove = removeSignatureByEpoch(epochId);
   if (didRemove) {
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE#responses
+    // we've gone for '200 response with JSON body' to respond to a DELETE
+    //  but 204 with no response body is another alternative:
+    //  res.status(204).send() to send with status 204 and no JSON body
     res.status(200).json({
       status: "success",
     });
