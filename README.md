@@ -301,6 +301,7 @@ It will look very similar to some other tests (although it's up to you to figure
 
 Once you've written it, so that it passes, you should also **check that it is possible for the tests to fail** by deliberately modifying the server code in a way which should make the tests fail. (Tests that pass no matter what aren't helpful - we want tests which tell us when we're doing something wrong.)
 
+When the tests pass, check that you can perform **D**elete actions as expected on signatures.
 
 ## Exercise 5: Writing `PUT /signature/:epoch`
 
@@ -310,13 +311,21 @@ Now, unskip the `describe` block for the tests for PUT `/signature/:epoch` - you
 
 It's up to you to write the route handler to make the tests pass!
 
+After that, see if you can perform **U**pdate actions as expected on signatures.
+
+## Exercise 6: Writing integration tests
+
+We've now got unit tests for CRUD actions against the `/signatures` endpoint - we've tested that we're getting back sensible server status code and response body structures, and that the relevant model functions are being called.
+
+We don't have any integration tests though - it'd be good if we could check that these all fit together in some expected way, i.e. along the lines of:
+1. Firstly, `GET /signatures` responds with an empty array for signatures
+2. After making a `POST /signatures`, there's now a signature in the array
+3. We can also now make a `GET /signatures/:epoch` request using the `epochId` of the newly created signature
+4. We can update the same signature using `PUT /signatures/:epoch`
+5. When I read the signature again through `GET /signatures/:epoch` I can see that it has indeed updated
+6. I can delete the signature via `DELETE /signatures/:epoch`
+7. Now, when I try to `GET /signatures/:epoch` for that signature, it returns a 404
+8. Reading all signatures at `GET /signatures`, I can see the signature has been removed
 
 
 
-
-## Tasks
-
-- Read SO post: [https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/](https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/)
-- test endpoint status code
-- make PUT /signatures/:epoch pass
-- write tests for DELETE /signatures:epoch
