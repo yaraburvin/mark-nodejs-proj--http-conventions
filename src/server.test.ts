@@ -1,17 +1,28 @@
+import { update } from "lodash";
 import supertest from "supertest";
 import app from "./server";
 import {
   DatelessSignature,
   findSignatureByEpoch,
+  getAllSignatures,
   insertSignature,
   Signature,
   updateSignatureByEpoch,
 } from "./signature/model";
+import { resetMockFor } from "./test-utils";
 
 // mock all the model functions
 jest.mock("./signature/model");
 
 describe("GET /signatures", () => {
+
+  beforeEach(() => {
+    resetMockFor(getAllSignatures, (): Signature[] => [
+      { epochMs: Date.now(), name: "Lucy Liu" },
+      { epochMs: Date.now() + 1, name: "Jackie Chan" },
+    ]);
+  });
+
   it("responds with a status of 200, a status of success and signatures array in data", async () => {
     const response = await supertest(app).get("/signatures");
     expect(response.status).toBe(200);
@@ -29,21 +40,10 @@ describe("GET /signatures/:epoch", () => {
   };
 
   beforeEach(() => {
-    // type guard so we can use the mock API inside
-    if (jest.isMockFunction(findSignatureByEpoch)) {
-      // Reset the mock call and return history before each test
-      findSignatureByEpoch.mockReset();
-
-      // mock behaviour for tests
-      findSignatureByEpoch.mockImplementation(
-        (epochMs: number): Signature | null => {
-          // return a signature for a specific epochMs, otherwise null
-          return epochMs === PASSING_SIGNATURE.epochMs
-            ? PASSING_SIGNATURE
-            : null;
-        }
-      );
-    }
+    resetMockFor(findSignatureByEpoch, (epochMs: number): Signature | null => {
+      // return a signature for a specific epochMs, otherwise null
+      return epochMs === PASSING_SIGNATURE.epochMs ? PASSING_SIGNATURE : null;
+    });
   });
 
   it("calls findSignatureByEpoch with the given epoch", async () => {
@@ -86,25 +86,19 @@ describe.skip("PATCH /signatures/:epoch", () => {
   };
 
   beforeEach(() => {
-    // type guard so we can use the mock API inside
-    if (jest.isMockFunction(updateSignatureByEpoch)) {
-      // Reset the mock call and return history before each test
-      updateSignatureByEpoch.mockReset();
-
-      // mock behaviour for tests
-      updateSignatureByEpoch.mockImplementation(
-        (
-          epochMs: number,
-          updateProperties: Partial<Signature>
-        ): Signature | null => {
-          // simulate updating a signature for a specific epochMs
-          // otherwise return null
-          return epochMs === PASSING_SIGNATURE.epochMs
-            ? { ...PASSING_SIGNATURE, ...updateProperties }
-            : null;
-        }
-      );
-    }
+    resetMockFor(
+      updateSignatureByEpoch,
+      (
+        epochMs: number,
+        updateProperties: Partial<Signature>
+      ): Signature | null => {
+        // simulate updating a signature for a specific epochMs
+        // otherwise return null
+        return epochMs === PASSING_SIGNATURE.epochMs
+          ? { ...PASSING_SIGNATURE, ...updateProperties }
+          : null;
+      }
+    );
   });
 
   it("calls findSignatureByEpoch with the given epoch", async () => {
@@ -142,19 +136,13 @@ describe.skip("PATCH /signatures/:epoch", () => {
 
 describe("POST /signatures", () => {
   beforeEach(() => {
-    // type guard so we can use the mock API inside
-    if (jest.isMockFunction(insertSignature)) {
-      // Reset the mock call and return history before each test
-      insertSignature.mockReset();
-
-      // mock behaviour for tests
-      insertSignature.mockImplementation(
-        (signature: DatelessSignature): Signature => ({
-          ...signature,
-          epochMs: Date.now(),
-        })
-      );
-    }
+    resetMockFor(
+      insertSignature,
+      (signature: DatelessSignature): Signature => ({
+        ...signature,
+        epochMs: Date.now(),
+      })
+    );
   });
 
   it("calls insertSignature with the string name and message passed in the body", async () => {
