@@ -142,6 +142,8 @@ describe.skip("PUT /signatures/:epoch", () => {
 });
 
 describe("POST /signatures", () => {
+  const mockResponseEpochId = 123456789
+
   beforeEach(() => {
     resetMockFor(
       insertSignature,
@@ -149,7 +151,7 @@ describe("POST /signatures", () => {
       // just return the signature with a new epochId property
       (signature: DatelessSignature): Signature => ({
         ...signature,
-        epochId: Date.now(),
+        epochId: mockResponseEpochId,
       })
     );
   });
@@ -172,6 +174,10 @@ describe("POST /signatures", () => {
     expect(response.status).toBe(201);
     expect(response.body.status).toBe("success");
     expect(response.body.data).toHaveProperty("signature");
+    expect(response.body.data.signature).toStrictEqual({
+      name: 'Noddy',
+      epochId: mockResponseEpochId
+    })
   });
 
   test("when not provided with a name in the request body, it responds with a status of 400, a status of success and signature in data", async () => {
