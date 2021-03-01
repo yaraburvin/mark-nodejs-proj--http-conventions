@@ -254,6 +254,8 @@ We're now going to look at the `server.test.ts` file and see how we're testing t
 
 ### A note on mocking
 
+One of the things you'll see in the test file is some test code which references 'mocking' - so, before you go into the file, we'll take a moment to step back and think about mocking.
+
 Think back to the unit tests in Digipet - we saw that we separated out our controller unit tests and our server unit tests such that it was possible for one to fail without the other failing.
 
 We achieved this through the use of mocks, which let us test whether a (mocked version of a) function gets called, without tying us into the specific behaviour of a function.
@@ -275,6 +277,16 @@ The exact implementation and details is not important - if you want, you can ign
 2. What's more, where Jest sees any calls to `getAllSignatures`, it should fill in the behaviour using the anonymous callback function `() => [...mockResponseData]`
 
 This lets us, e.g., test that the server response to `GET /signatures` includes the result of `getAllSignatures` - but swapping in a mocked and simplified version of `getAllSignatures` to use in place of the real function. It lets us test how the endpoint handler _uses_ `getAllSignatures` without worrying about the exact details of how it's implemented in reality.
+
+You don't need to worry about the exact specifics of what's being mocked as much as the _intent_ - the job of these mock functions is to do a plausible job of returning what the actual function _might_ return, without having to do any gory implementation details.
+
+### Reading the test code
+
+Now, try having a look at the test code and making sense of it.
+
+In particular, look for the following:
+- How are status codes being tested?
+- How is sending data in a JSON body being simulated and tested?
 
 
 ## Tasks
