@@ -15,7 +15,9 @@ Now you've built a working server, we'll start adding some common conventions on
 - Send JSON body data with Postman
 - Handle JSON body data with Express (including middleware)
 
-## Exercise 0: Request types and status codes
+Make sure you do the reading in Exercise 0 _before_ you look at this project code - parts of it will be very cryptic without it.
+
+## Exercise 0: Conventions in request types and status codes
 
 ### HTTP request types
 
@@ -63,9 +65,77 @@ And, one which is pretty rare:
 
 Most of the time, we will be using `200` (there's a good reason for it to be the Express default), but we will be more explicit about this and occasionally dip into other status codes.
 
+### JSON response structure: JSend
+
+We could send back our JSON data in any particular structure we want.
+
+For example, in response to a `GET /todos`, here are some possible JSON responses:
+
+```json
+[
+  { "text": "Buy some milk" },
+  { "text": "Solve the P versus NP problem" }
+]
+```
+
+```json
+{
+  "message": "Showing all todos",
+  "data": [
+    { "text": "Buy some milk" },
+    { "text": "Solve the P versus NP problem" }
+  ]
+}
+```
+
+```json
+{
+  "report": "Successfully fetched 2 todos",
+  "metadata": {
+    "time": 104
+  },
+  "fetched": {
+    "todos": [
+      { "text": "Buy some milk" },
+      { "text": "Solve the P versus NP problem" }
+    ]
+  }
+}
+```
+
+```json
+{
+  "errors": [],
+  "data": {
+    "resource": "todos",
+    "content": [
+      { "text": "Buy some milk" },
+      { "text": "Solve the P versus NP problem" }
+    ]
+  }
+}
+```
+
+Some formatting guidelines and conventions have emerged, with the most popular being a specification called [JSON:API](https://jsonapi.org/) - but it's pretty meaty and overkill for the small APIs which we're building...!
+
+Instead, for learning purposes, we'll use the simpler (if less popular) [JSend specification](https://github.com/omniti-labs/jsend), which would prescribe:
+
+
+```json
+{
+  "status": "success",
+  "data": {
+    "todos": [
+      { "text": "Buy some milk" },
+      { "text": "Solve the P versus NP problem" }
+    ]
+  }
+}
+```
+
 ### Conventions vs requirements
 
-You don't _have_ to use any of these conventions - it is perfectly possible to write a server which performs CRUD operations without using conventional HTTP request types or status codes.
+You don't _have_ to use any of these conventions - it is perfectly possible to write a server which performs CRUD operations without using conventional HTTP request types, status codes or JSON response specifications.
 
 (This is exactly what we did with our digipet backend - exclusively GET requests, and exclusively `200` status codes by default.)
 
