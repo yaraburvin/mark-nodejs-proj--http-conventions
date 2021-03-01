@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/signatures", (req, res) => {
-  res.status(200).send({
+  res.status(200).json({
     status: "success",
     data: {
       signatures: [], // TODO: populate from 'database'
@@ -36,14 +36,14 @@ app.post("/signatures", (req, res) => {
       message: typeof message === "string" ? message : undefined,
     });
 
-    res.status(201).send({
+    res.status(201).json({
       status: "success",
       data: {
         signature: createdSignature,
       },
     });
   } else {
-    res.status(400).send({
+    res.status(400).json({
       status: "fail",
       data: {
         name: "A string value for name is required",
@@ -58,14 +58,14 @@ app.get("/signatures/:epoch", (req, res) => {
   const epochMs = parseInt(req.params.epoch); // params are string type
   const signature = findSignatureByEpoch(epochMs);
   if (signature) {
-    res.status(200).send({
+    res.status(200).json({
       status: "success",
       data: {
         signature,
       },
     });
   } else {
-    res.status(404).send({
+    res.status(404).json({
       status: "fail",
       data: {
         epochMs: "Could not find a signature with that epoch identifier",
@@ -78,11 +78,11 @@ app.delete("/signatures/:epoch", (req, res) => {
   const epochMs = parseInt(req.params.epoch); // params are string type
   const didRemove = removeSignatureByEpoch(epochMs);
   if (didRemove) {
-    res.status(200).send({
+    res.status(200).json({
       status: "success",
     });
   } else {
-    res.status(404).send({
+    res.status(404).json({
       status: "fail",
       data: {
         epochMs: "Could not find a signature with that epoch identifier",
