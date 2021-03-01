@@ -46,6 +46,32 @@ We've been exclusively making `GET` requests and defining corresponding `app.get
 
 More reading: [https://restfulapi.net/http-methods/](HTTP methods)
 
+### HTTP status codes
+
+When we send a response from our server, it has a numerical status code attached.
+
+In Express, this defaults to `200` - but [there are lots more to choose from](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status).
+
+We don't need to learn all of these, but here are some ones that are more common
+- [`200` (OK)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200)
+- [`201` (Created)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/201)
+- [`400` (Bad Request)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400)
+- [`404` (Not Found)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404) - the classic
+
+And, one which is pretty rare:
+- [`418` (I'm a teapot)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418) - yes, really
+
+Most of the time, we will be using `200` (there's a good reason for it to be the Express default), but we will be more explicit about this and occasionally dip into other status codes.
+
+### Conventions vs requirements
+
+You don't _have_ to use any of these conventions - it is perfectly possible to write a server which performs CRUD operations without using conventional HTTP request types or status codes.
+
+(This is exactly what we did with our digipet backend - exclusively GET requests, and exclusively `200` status codes by default.)
+
+However, writing our server by following conventions will make it much easier for others to work with it.
+
+
 ## Tasks
 
 - Read SO post: [https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/](https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/)
