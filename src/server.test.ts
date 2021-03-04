@@ -108,18 +108,18 @@ describe.skip("PUT /signatures/:epoch", () => {
     );
   });
 
-  it("calls findSignatureByEpoch with the given epoch", async () => {
+  it("calls updateSignatureByEpoch with the given epoch and property update", async () => {
     await supertest(app)
       .put("/signatures/1614095562950")
       .send(updateProperties);
-    expect(findSignatureByEpoch).toHaveBeenCalledWith(1614095562950);
+    expect(updateSignatureByEpoch).toHaveBeenCalledWith(1614095562950, updateProperties);
   });
 
-  test("when updateSignatureByEpoch returns a signature, it returns a 200 with the given epoch", async () => {
+  test("when updateSignatureByEpoch returns a signature, it returns a 200 with the given epoch and full updated signature", async () => {
     const response = await supertest(app)
       .put(`/signatures/${passingSignature.epochId}`)
       .send(updateProperties);
-    expect(findSignatureByEpoch).toReturnWith({
+    expect(updateSignatureByEpoch).toReturnWith({
       ...passingSignature,
       ...updateProperties,
     });
@@ -128,12 +128,12 @@ describe.skip("PUT /signatures/:epoch", () => {
     expect(response.body.data).toHaveProperty("signature");
   });
 
-  test("when updateSignatureByEpoch returns null, it returns a 404 with information about not managing to find a signature", async () => {
+  test("when updateSignatureByEpoch returns null, it returns a 404 with information about not managing to update a signature", async () => {
     // add one to patch a non-passing epochId value
     const response = await supertest(app)
       .put(`/signatures/${passingSignature.epochId + 1}`)
       .send(updateProperties);
-    expect(findSignatureByEpoch).toReturnWith(null);
+    expect(updateSignatureByEpoch).toReturnWith(null);
     expect(response.status).toBe(404);
     expect(response.body.status).toBe("fail");
     expect(response.body.data).toHaveProperty("epochId");
