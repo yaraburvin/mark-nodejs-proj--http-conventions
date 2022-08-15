@@ -5,6 +5,7 @@ import {
   findSignatureByEpoch,
   getAllSignatures,
   insertSignature,
+  removeSignatureByEpoch,
   Signature,
   updateSignatureByEpoch,
 } from "./signature/model";
@@ -80,7 +81,7 @@ describe("GET /signatures/:epoch", () => {
   });
 });
 
-describe.skip("PUT /signatures/:epoch", () => {
+describe("PUT /signatures/:epoch", () => {
   const passingEpochId = 1614096121305;
   const passingSignature = {
     epochId: passingEpochId,
@@ -190,3 +191,46 @@ describe("POST /signatures", () => {
     expect(response.body.data.name).toMatch(/required/);
   });
 });
+
+describe("DELETE /signatures:epoch",() => {
+  const passingEpochId  = 123456789
+  const passingSignature = {
+    epochId: passingEpochId,
+    name: "Indiana Jones",
+  };
+
+  beforeEach(() => {
+    resetMockFor(
+      removeSignatureByEpoch,
+      (epochId: number) : {"status" : "success"} | null  => {
+        return epochId === passingSignature.epochId ?{"status": "success"} : null;
+      }
+    );
+  });
+
+  it("calls  removeSignature with a name and a message and deletes this from the body", async () => {
+    await supertest(app).delete(`/signatures/${passingSignature.epochId}`)
+    expect(removeSignatureByEpoch).toHaveBeenCalledWith(123456789)
+  });
+
+  test("when removeSignature returns a signature, it returns a 200 with the given epoch", async () => {
+    const response = await supertest(app).delete(
+      `/signatures/${passingSignature.epochId}`
+    );
+    expect(removeSignatureByEpoch).toReturnWith({"status": "success"});
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe("success");
+  });
+
+  test("when findSignatureByEpoch returns null, it returns a 404 with information about not managing to find a signature", async () => {
+    // add one to get a non-passing epochId value
+    const response = await supertest(app).delete(
+      `/signatures/${passingSignature.epochId + 1}`
+    );
+    expect(removeSignatureByEpoch).toReturnWith(null);
+    expect(response.status).toBe(404);
+    expect(response.body.status).toBe("fail");
+    expect(response.body.data).toHaveProperty("epochId");
+    expect(response.body.data.epochId).toMatch(/could not find/i);
+  });
+})

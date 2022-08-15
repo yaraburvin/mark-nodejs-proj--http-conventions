@@ -137,7 +137,7 @@ export function insertSignature(signature: DatelessSignature): Signature {
 }
 
 /**
- * Tries to remove the first matching signature based on the passed
+ * Tries to  the first matching signature based on the passed
  *  in signature matcher.
  *
  * @param signatureMatcher the properties to match against

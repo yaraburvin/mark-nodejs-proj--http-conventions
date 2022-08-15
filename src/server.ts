@@ -5,6 +5,7 @@ import {
   getAllSignatures,
   insertSignature,
   removeSignatureByEpoch,
+  updateSignatureByEpoch,
 } from "./signature/model";
 
 const app = express();
@@ -86,6 +87,26 @@ app.delete("/signatures/:epoch", (req, res) => {
     //  res.status(204).send() to send with status 204 and no JSON body
     res.status(200).json({
       status: "success",
+    });
+  } else {
+    res.status(404).json({
+      status: "fail",
+      data: {
+        epochId: "Could not find a signature with that epoch identifier",
+      },
+    });
+  }
+});
+
+app.put("/signatures/:epoch", (req, res) => {
+   // params are string type
+   const update = updateSignatureByEpoch(parseInt(req.params.epoch), req.body )
+  if (update) {
+    res.status(200).json({
+      status: "success",
+      data: {
+        signature : update
+      }
     });
   } else {
     res.status(404).json({
